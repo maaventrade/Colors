@@ -34,11 +34,19 @@ public class Pixel {
 		this.white = source.white;
 		
 		if (brightness > 0){
-			this.red = (short)( this.red / 2);
-			this.yellow= (short)( this.yellow / 2);
-			this.blue = (short)( this.blue / 3);
+			this.red = (short)( this.red / 3);
+
+			if (this.yellow == 0)
+				this.yellow= 10;
+			else
+				this.yellow = (short)( this.yellow / 3);
+			
+			this.blue = (short)( this.blue / 4);
 			this.white = (short)(100-(this.red+this.yellow+this.blue));
+			
+			//Log.d("",""+this.red+" "+this.yellow+" "+this.blue+" "+this.white);
 		} else {
+			/*
 			int max = this.red+this.yellow+this.blue;
 			int max1 = max / 2;
 			
@@ -46,9 +54,8 @@ public class Pixel {
 			this.yellow= (short)( this.yellow  * (max1/this.yellow));
 			this.blue = (short)( this.blue  * (max1/this.blue));
 			this.white = (short)(100-(this.red+this.yellow+this.blue));
+			*/
 				}
-			
-		//Log.d("xxx",""+this.red+" "+this.yellow+" "+this.blue+" "+this.white);
 	}
 	
 	public void setModified(boolean p0)

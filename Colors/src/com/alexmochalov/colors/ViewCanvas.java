@@ -20,6 +20,15 @@ import java.util.*;
 
 public class ViewCanvas extends View
 {
+	class Cell{
+		int color;
+		int alpha;
+		Pixel pixel = null;
+		int height;
+		boolean painted = false;
+	}
+	Cell cells[][] = null;
+
 	private int mBrushSize = 0; // 1 - 10
 	private int mColor = 0; 
 	private int mAlpha = 0;
@@ -116,13 +125,6 @@ public class ViewCanvas extends View
 		}
 	}
 	
-	class Cell{
-		int color;
-		int alpha;
-		Pixel pixel = null;
-		int height;
-	}
-	Cell cells[][] = null;
 	
 	@Override protected void onSizeChanged(int wd, int h, int oldw,
 										   int oldh) {
@@ -269,7 +271,7 @@ Log.d("dr","size "+wd+" "+h);
 				for (int i = 0; i < cellsCountHor; i++)
 					for (int j = 0; j < cellsCountVert; j++)
 					{
-						if (cells[i][j].height == 1){
+						if (cells[i][j].height == 1 && ! cells[i][j].painted){
 							
 							Pixel pixel = new Pixel(cells[i][j].pixel, 1);
 							
@@ -280,9 +282,15 @@ Log.d("dr","size "+wd+" "+h);
 											 i * CELLSIZE + CELLSIZE, 
 											 j * CELLSIZE + CELLSIZE,
 											 mPaint);
+							cells[i][j].painted = true;
 							
 							for (int i1 = i-1; i1 <= i+1; i1++)
-								for (int j1 = j-1; j1 <= j+1; j1++)
+								for (int j1 = j-1; j1 <= j+1; j1++){
+									if ( i1 < 0 || j1 < 0 || i1 >= cellsCountHor || j1 >= cellsCountVert) 
+										continue;
+									if (cells[i1][j1].painted)
+										continue;
+									
 									if (cells[i1][j1].height == 0){
 									
 										pixel = new Pixel(cells[i][j].pixel, -1);
@@ -295,7 +303,9 @@ Log.d("dr","size "+wd+" "+h);
 														 j1 * CELLSIZE + CELLSIZE,
 														 mPaint);
 										
+										cells[i1][j1].painted = true;
 									}
+								}
 							
 						}
 						
@@ -338,7 +348,7 @@ Log.d("dr","size "+wd+" "+h);
 				
 				cells[i][j].pixel = new Pixel(mPixel);
 				cells[i][j].color = mColor;
-
+				cells[i][j].painted = false;
 				
 				if (cells[i][j].pixel == null){
 					cells[i][j].pixel = new Pixel(mPixel);
@@ -353,72 +363,49 @@ Log.d("dr","size "+wd+" "+h);
 				}
 				
 
-
-				cells[i][j].alpha = (int) (255 - 255 * distance/maxDistance);
-				if (restOfColor < 20){
-					cells[i][j].alpha = cells[i][j].alpha/(20-restOfColor);
+				cells[i][j].alpha = 255;
+				
+				if (distance >= maxDistance - 6) {
+					cells[i][j].alpha = (int) (255 - 255 * distance/maxDistance);
+					if (restOfColor < 20){
+						cells[i][j].alpha = cells[i][j].alpha / (20 - restOfColor);
+					}
 				}
 				
-				
-				int x01 = x0 + (x-x0);
-				int x11 = x + (x-x0);
-				
-				int y01 = y0 + (y-y0);
-				int y11 = y + (y-y0);
-				
-				float dx = x11-x01;
-				float dy = y11-y01;
-				
-				float di = i-nX;
-				float dj = j-nY;
-				
-				if (distance >= maxDistance-5)
-				{
-					float scal = dx * di + dy * dj;  
+				if (distance >= maxDistance - 8) {
+					int x01 = x0 + (x - x0);
+					int x11 = x + (x - x0);
+
+					int y01 = y0 + (y - y0);
+					int y11 = y + (y - y0);
+
+					float dx = x11 - x01;
+					float dy = y11 - y01;
+
+					float di = i - nX;
+					float dj = j - nY;
+					
+					float scal = dx * di + dy * dj;
 					double modA = Math.hypot(dx, dy);
 					double modB = Math.hypot(di, dj);
-					
-					double cos = scal/(modA*modB);
-					//double degree = Math.acos(cos);
-					//Log.d("xxx", ""+NNN+" dx "+dx+" dy "+dy+" di "+di+" dj "+dj+"  "+cos+" "+Math.toDegrees(degree));
-//					Log.d("", ""+NNN+" alpha "+Math.toDegrees(Math.acos(cos)));
-					
-					
-					//if (degree < -1 || degree > 1)
-					//	cells[i][j].height = 1;
-						
-					/*if ( dx < 0 && dy == 0 && cos >= 0.6
-						
-						)
-						cells[i][j].height = 1;*/
-						/*
-if (cos >= 0){
-					mPaint.setColor(Color.RED);
-					mCanvas.drawLine(x01,y01,x11,y11,mPaint);
 
-					mPaint.setColor(Color.GREEN);
-					mCanvas.drawLine(x,y,i * CELLSIZE,j* CELLSIZE,mPaint);
-						}*/
-				if ( cos >= 0){
+					double cos = scal / (modA * modB);
+					if (cos >= 0) {
 						cells[i][j].height = 1;
-					
-						}
-					
-			 } else 
+					}
+				} else
 					cells[i][j].height = 0;
-					
+
 				mPaint.setColor(cells[i][j].color);
 				mPaint.setAlpha(cells[i][j].alpha);
-				
-				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, 
-								 i * CELLSIZE + CELLSIZE, 
-								 j * CELLSIZE + CELLSIZE,
-								 mPaint);
-								 
+
+				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
+						+ CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
+
 			}
-		
+
 		NNN++;
-	
+
 	}
 
 /*
