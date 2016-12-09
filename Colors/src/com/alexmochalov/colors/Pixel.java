@@ -1,6 +1,6 @@
 package com.alexmochalov.colors;
 
-import java.io.Serializable;
+import android.util.*;
 
 public class Pixel {
 	// percent of red
@@ -27,6 +27,30 @@ public class Pixel {
 		this.white = source.white;
 	}
 
+	public Pixel(Pixel source, int brightness){
+		this.red = source.red;
+		this.yellow = source.yellow;
+		this.blue = source.blue;
+		this.white = source.white;
+		
+		if (brightness > 0){
+			this.red = (short)( this.red / 2);
+			this.yellow= (short)( this.yellow / 2);
+			this.blue = (short)( this.blue / 3);
+			this.white = (short)(100-(this.red+this.yellow+this.blue));
+		} else {
+			int max = this.red+this.yellow+this.blue;
+			int max1 = max / 2;
+			
+			this.red = (short)( this.red  * (max1/this.red));
+			this.yellow= (short)( this.yellow  * (max1/this.yellow));
+			this.blue = (short)( this.blue  * (max1/this.blue));
+			this.white = (short)(100-(this.red+this.yellow+this.blue));
+				}
+			
+		//Log.d("xxx",""+this.red+" "+this.yellow+" "+this.blue+" "+this.white);
+	}
+	
 	public void setModified(boolean p0)
 	{
 		modified = true;

@@ -250,14 +250,14 @@ Log.d("dr","size "+wd+" "+h);
 					
 					float tX = x0 + dX;
 					float tY =  y0 + dY;
-					/*
+					
 					for (int i = 0; i < n; i++)
 					{
 						setCells((int)tX, (int)tY);
 						tX += dX;
 						tY += dY;
 					}
-					*/
+					
 					restOfColor--;
 					N++;
 					
@@ -265,28 +265,28 @@ Log.d("dr","size "+wd+" "+h);
 					getColorFromTheCanvas(x, y);
 				
 				break;
-			case MotionEvent.ACTION_UP:/*
+			case MotionEvent.ACTION_UP:
 				for (int i = 0; i < cellsCountHor; i++)
 					for (int j = 0; j < cellsCountVert; j++)
 					{
 						if (cells[i][j].height == 1){
 							
-							Pixel pixel = new Pixel(cells[i][j].pixel);
-							pixel.add(sunny, true); 
+							Pixel pixel = new Pixel(cells[i][j].pixel, 1);
+							
 							int color = Utils.ryb2rgb(pixel);
 							mPaint.setColor(color);
-							//mPaint.setAlpha(cells[i][j].alpha);
+							mPaint.setAlpha(cells[i][j].alpha);
 							mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, 
 											 i * CELLSIZE + CELLSIZE, 
 											 j * CELLSIZE + CELLSIZE,
 											 mPaint);
-							/*
+							
 							for (int i1 = i-1; i1 <= i+1; i1++)
 								for (int j1 = j-1; j1 <= j+1; j1++)
 									if (cells[i1][j1].height == 0){
 									
-										pixel = new Pixel(cells[i][j].pixel);
-										pixel.add(shadow, true); 
+										pixel = new Pixel(cells[i][j].pixel, -1);
+										
 										color = Utils.ryb2rgb(pixel);
 										mPaint.setColor(color);
 										mPaint.setAlpha(cells[i1][j1].alpha);
@@ -300,7 +300,7 @@ Log.d("dr","size "+wd+" "+h);
 						}
 						
 					}
-				*/
+				
 				x0 = -1;
 				y0 = -1;
 				invalidate();
@@ -318,8 +318,8 @@ Log.d("dr","size "+wd+" "+h);
 		if (x0 == -1)
 			return;
 			
-		if (NNN > 0)
-			return;
+		//if (NNN > 0)
+			//return;
 		
 		int nX = x/CELLSIZE;
 		int nY = y/CELLSIZE;
@@ -379,8 +379,8 @@ Log.d("dr","size "+wd+" "+h);
 					double modB = Math.hypot(di, dj);
 					
 					double cos = scal/(modA*modB);
-					double degree = Math.acos(cos);
-					Log.d("xxx", ""+NNN+" dx "+dx+" dy "+dy+" di "+di+" dj "+dj+"  "+cos+" "+Math.toDegrees(degree));
+					//double degree = Math.acos(cos);
+					//Log.d("xxx", ""+NNN+" dx "+dx+" dy "+dy+" di "+di+" dj "+dj+"  "+cos+" "+Math.toDegrees(degree));
 //					Log.d("", ""+NNN+" alpha "+Math.toDegrees(Math.acos(cos)));
 					
 					
@@ -391,17 +391,15 @@ Log.d("dr","size "+wd+" "+h);
 						
 						)
 						cells[i][j].height = 1;*/
-						
-//if (degree < 1){
+						/*
+if (cos >= 0){
 					mPaint.setColor(Color.RED);
 					mCanvas.drawLine(x01,y01,x11,y11,mPaint);
 
 					mPaint.setColor(Color.GREEN);
 					mCanvas.drawLine(x,y,i * CELLSIZE,j* CELLSIZE,mPaint);
-						//}
-				if ( Math.signum(dx) == Math.signum(dy) && cos >= 0.3
-						|| Math.signum(dx) != Math.signum(dy) && cos <= -0.3
-							){
+						}*/
+				if ( cos >= 0){
 						cells[i][j].height = 1;
 					
 						}
@@ -410,13 +408,13 @@ Log.d("dr","size "+wd+" "+h);
 					cells[i][j].height = 0;
 					
 				mPaint.setColor(cells[i][j].color);
-				//mPaint.setAlpha(cells[i][j].alpha);
-				/*
+				mPaint.setAlpha(cells[i][j].alpha);
+				
 				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, 
 								 i * CELLSIZE + CELLSIZE, 
 								 j * CELLSIZE + CELLSIZE,
 								 mPaint);
-								 */
+								 
 			}
 		
 		NNN++;
