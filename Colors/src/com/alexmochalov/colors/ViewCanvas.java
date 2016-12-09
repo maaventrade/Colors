@@ -374,13 +374,13 @@ Log.d("dr","size "+wd+" "+h);
 				
 				if (distance >= maxDistance-5)
 				{
-					float scal = dx * dj + dy * di;  
+					float scal = dx * di + dy * dj;  
 					double modA = Math.hypot(dx, dy);
 					double modB = Math.hypot(di, dj);
 					
 					double cos = scal/(modA*modB);
 					double degree = Math.acos(cos);
-					Log.d("", ""+NNN+" dx "+dx+" dy "+dy+" i "+di+" j "+j+"  "+cos+" "+Math.toDegrees(degree));
+					Log.d("xxx", ""+NNN+" dx "+dx+" dy "+dy+" di "+di+" dj "+dj+"  "+cos+" "+Math.toDegrees(degree));
 //					Log.d("", ""+NNN+" alpha "+Math.toDegrees(Math.acos(cos)));
 					
 					
