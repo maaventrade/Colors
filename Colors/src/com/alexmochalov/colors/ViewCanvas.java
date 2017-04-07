@@ -30,7 +30,9 @@ public class ViewCanvas extends View
 	Cell cells[][] = null;
 
 	private int mBrushSize = 0; // 1 - 10
+	
 	private int[][] mBrushPoints = null;
+	private int[][] mBrushPoints1 = null;
 	
 	private int mColor = 0; 
 	private int mAlpha = 0;
@@ -103,30 +105,52 @@ public class ViewCanvas extends View
 		
 		mBrushSize = 11;
 		maxDistance = Math.hypot(mBrushSize, mBrushSize);
-		mBrushPoints = new int[mBrushSize << 1][mBrushSize << 1];
-		for (int i = 0; i<mBrushSize << 1; i++)
-			for (int j = 0; j<mBrushSize << 1; j++){
+		
+		int mBrushSize2 = mBrushSize << 1;
+		
+		mBrushPoints = new int[mBrushSize2][mBrushSize2];
+		for (int i = 0; i<mBrushSize2; i++)
+			for (int j = 0; j<mBrushSize2; j++){
 				// Test is our point is inside circle
 				double distance = Math.hypot(i - mBrushSize, 
 											 j - mBrushSize);
 											 
 				// If cuttent Cell is far anougth from the center of touching
 				// make this Cell more transparent
-				
-				
-											 
-											 
 				if (distance >= maxDistance-3)
 					mBrushPoints[i][j] = 0;
 				else if (distance >= maxDistance - 6) 
 					mBrushPoints[i][j] = (int) (255 - 255 * distance/maxDistance);
 	
 				else mBrushPoints[i][j] = (int)(Math.random()*255);
-				
-				
+			}
+		
+		mBrushPoints1 = new int[mBrushSize2][mBrushSize2];
+		for (int i = 0; i<mBrushSize2; i++)
+			for (int j = 0; j<mBrushSize2; j++){
+				mBrushPoints1[i][j] = mBrushPoints[i][j] >> 1;
+			}
+		
+		for (int i = 0; i<mBrushSize2; i++)
+			for (int j = 0; j<mBrushSize2; j++){
+				if (mBrushPoints1[i][j] < 10){
+					for (int k = -10; k < 10; k++)
+					if (i + k >= 0 && i + k < mBrushSize2 )
+						mBrushPoints1[i + k][j] = mBrushPoints1[i+k][j] >> 1;
+				}
 			}
 				
-			
+
+		for (int i = 0; i<mBrushSize2; i++)
+			for (int j = 0; j<mBrushSize2/2; j++){
+				mBrushPoints1[i][j] = Color.GREEN;
+			}
+		for (int i = 0; i<mBrushSize2; i++)
+			for (int j = mBrushSize2/2; j<mBrushSize2; j++){
+				mBrushPoints1[i][j] = Color.RED;
+			}
+		
+		
 		Utils.brushRadius = 30; // ????????????????????????????????????????
 		brush.setRadius(Utils.brushRadius, true);
 	}
@@ -230,8 +254,8 @@ Log.d("dr","size "+wd+" "+h);
 		mBrushSize = 0;
 	}
 	
-	int start;
 	long t0;
+	boolean ok = false;
 	
 	@Override public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getAction();
@@ -250,11 +274,9 @@ Log.d("dr","size "+wd+" "+h);
 				
 				if (restOfColor > 0){
 					
-					int start = 100;
 					t0 = event.getEventTime();
-					setCells(x, y, start);
-					//mPaint.setColor(mColor);
-					//mCanvas.drawRect(x-mBrushSize, y-mBrushSize,x+mBrushSize, y+mBrushSize, mPaint);
+					//setCells(x, y, 0, 0, 0);
+					
 					N++;
 				} else; 
 					getColorFromTheCanvas(x, y);
@@ -266,11 +288,15 @@ Log.d("dr","size "+wd+" "+h);
 					
 					double d = Math.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0));
 					long t = event.getEventTime();
-					double v = d/t;
 					
-					Log.d("","move== "+d+" "+t+" "+v);
+					double v = d/(t-t0);
+					//double tg = (y-y0)/(x-x0);
 					
-					setCells(x, y, start);
+					//Log.d("aaa","move  "+x0+" "+x+" "+y0+" "+y);
+					
+					
+					setCells(x, y, v, x-x0, y-y0);
+					
 					// Draw Cells from the start of movin to the end
 					float dX;
 					float dY;
@@ -293,13 +319,12 @@ Log.d("dr","size "+wd+" "+h);
 					
 					for (int i = 0; i < n; i++)
 					{
-						setCells((int)tX, (int)tY, start);
+						//setCells((int)tX, (int)tY, v, x-x0, y-y0);
 						tX += dX;
 						tY += dY;
 					}
 					
-					start--;
-					restOfColor--;
+					//restOfColor--;
 					N++;
 					
 				} else 
@@ -308,49 +333,7 @@ Log.d("dr","size "+wd+" "+h);
 				
 				break;
 			case MotionEvent.ACTION_UP:
-				/*
-				for (int i = 0; i < cellsCountHor; i++)
-					for (int j = 0; j < cellsCountVert; j++)
-					{
-						if (cells[i][j].height == 1 && ! cells[i][j].painted){
-							
-							Pixel pixel = new Pixel(cells[i][j].pixel, 1);
-							
-							int color = Utils.ryb2rgb(pixel);
-							mPaint.setColor(color);
-							mPaint.setAlpha(cells[i][j].alpha);
-							mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, 
-											 i * CELLSIZE + CELLSIZE, 
-											 j * CELLSIZE + CELLSIZE,
-											 mPaint);
-							cells[i][j].painted = true;
-							
-							for (int i1 = i-1; i1 <= i+1; i1++)
-								for (int j1 = j-1; j1 <= j+1; j1++){
-									if ( i1 < 0 || j1 < 0 || i1 >= cellsCountHor || j1 >= cellsCountVert) 
-										continue;
-									if (cells[i1][j1].painted)
-										continue;
-									
-									if (cells[i1][j1].height == 0){
-									
-										pixel = new Pixel(cells[i][j].pixel, -1);
-										
-										color = Utils.ryb2rgb(pixel);
-										mPaint.setColor(color);
-										mPaint.setAlpha(cells[i1][j1].alpha);
-										mCanvas.drawRect(i1 * CELLSIZE, j1 * CELLSIZE, 
-														 i1 * CELLSIZE + CELLSIZE, 
-														 j1 * CELLSIZE + CELLSIZE,
-														 mPaint);
-										
-										cells[i1][j1].painted = true;
-									}
-								}
-							
-						}
-						
-					}*/
+				//Log.d("aaa","UP  "+x0+" "+x+" "+y0+" "+y);
 				t0 = event.getEventTime();
 				x0 = -1;
 				y0 = -1;
@@ -364,11 +347,12 @@ Log.d("dr","size "+wd+" "+h);
 		return true;
 	}
 
+	
 	/**
 	* Set color of the cells, covered by the brush
 	x, t are the coordinates of the toaching or moving
 	**/
-	private void setCells(int x, int y, int start)
+	private void setCells(int x, int y, double v, int dx, int dy)
 	{
 		if (x0 == -1)
 			return;
@@ -380,12 +364,16 @@ Log.d("dr","size "+wd+" "+h);
 		int nY = y/CELLSIZE;
 		
 		//int tempmBrushSize = mBrushSize;
+				
+		int size= mBrushSize;
 		
+		int mBrushSize2 = mBrushSize << 1;
+
 		
-		int size;
-		if (start <= 0)
-			size= mBrushSize;
-		else size = mBrushSize >> 1;
+		if (ok){
+			return;
+		}
+		
 		
 		// Repeet for all point ofthe brush
 		for (int i = nX - size; i < nX + size; i++)
@@ -394,7 +382,6 @@ Log.d("dr","size "+wd+" "+h);
 				if ( i < 0 || j < 0 || i >= cellsCountHor || j >= cellsCountVert) 
 					continue;
 
-				
 				
 				// Create new Pixel in the current Cell
 				cells[i][j].pixel = new Pixel(mPixel);
@@ -414,42 +401,71 @@ Log.d("dr","size "+wd+" "+h);
 				}
 				
 				//Log.d("",""+(i-nX+mBrushSize)+"***"+(j-nY+mBrushSize));
-				cells[i][j].alpha = mBrushPoints[i-nX+size][j-nY+size];
-				
-				
-				/*
-				/* REMOVE IT
-				if (distance >= maxDistance - 8) {
-					int x01 = x0 + (x - x0);
-					int x11 = x + (x - x0);
+				if (v <= -1)
+					cells[i][j].alpha = mBrushPoints[i-nX+size][j-nY+size];
+				else {
+					//if (dy == 0)
+					//	cells[i][j].alpha = mBrushPoints1[i-nX+size][j-nY+size];
+					//else if (dx == 0)
+					//	cells[i][j].alpha = mBrushPoints1[j-nY+size][i-nX+size];
+					//else{
+						/*
+						//dx = 50;
+						dy = -50;
+						
+						double inRads = Math.atan2(dy, dx);
+						
+						//inRads = inRads - Math.PI/2;
+						
+						
+						int x11 = i-nX+size;
+						int y11 = j-nY+size;
 
-					int y01 = y0 + (y - y0);
-					int y11 = y + (y - y0);
+						//x11 = 20;
+						//y11 = 10;
+						
+						int x12 = (int) ((x11-size)*Math.cos(inRads) - (y11-size)*Math.sin(inRads)) + size;
+						int y12 = (int) ((x11-size)*Math.sin(inRads) + (y11-size)*Math.cos(inRads)) + size;
 
-					float dx = x11 - x01;
-					float dy = y11 - y01;
+						if (x12 >= 0 && x12 < mBrushSize2 && y12 >=0 && y12 < mBrushSize)
+							cells[i][j].alpha = mBrushPoints1[x12][y12];
+						*/
+						
+						int x11 = i-nX+size;
+						int y11 = j-nY+size;
 
-					float di = i - nX;
-					float dj = j - nY;
+						double inRads = Math.atan2(50, -50);
+						
+						if (inRads < 0)
+					        inRads = Math.abs(inRads);
+					    else
+					        inRads = 2*Math.PI - inRads;
+						
+
+						int x12 = (int) ((x11-size)*Math.cos(inRads) - (y11-size)*Math.sin(inRads)) + size;
+						int y12 = (int) ((x11-size)*Math.sin(inRads) + (y11-size)*Math.cos(inRads)) + size;
+						
+						//x12 = x11;
+						//y12 = y11;
+
+						if (x12 >= 0 && x12 < mBrushSize2 && y12 >=0 && y12 < mBrushSize2){
+							mPaint.setColor(mBrushPoints1[x12][y12]);
+							mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
+									+ CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
+						}	
+					//};
 					
-					float scal = dx * di + dy * dj;
-					double modA = Math.hypot(dx, dy);
-					double modB = Math.hypot(di, dj);
-
-					double cos = scal / (modA * modB);
-					if (cos >= 0) {
-						cells[i][j].height = 1;
-					}
-				} else
-					cells[i][j].height = 0;
-*/
+				}
+					
 				// Draw the cell
-				mPaint.setColor(cells[i][j].color);
-				mPaint.setAlpha(cells[i][j].alpha);
+				//mPaint.setColor(cells[i][j].color);
+				
+				//mPaint.setAlpha(cells[i][j].alpha);
 
-				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
-						+ CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
+				//mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
+				//		+ CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
 
+				ok = true;
 			}
 
 		NNN++;
