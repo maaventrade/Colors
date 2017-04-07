@@ -30,6 +30,8 @@ public class ViewCanvas extends View
 	Cell cells[][] = null;
 
 	private int mBrushSize = 0; // 1 - 10
+	private int[][] mBrushPoints = null;
+	
 	private int mColor = 0; 
 	private int mAlpha = 0;
 	private Pixel mPixel = null;
@@ -101,7 +103,30 @@ public class ViewCanvas extends View
 		
 		mBrushSize = 11;
 		maxDistance = Math.hypot(mBrushSize, mBrushSize);
-		
+		mBrushPoints = new int[mBrushSize << 1][mBrushSize << 1];
+		for (int i = 0; i<mBrushSize << 1; i++)
+			for (int j = 0; j<mBrushSize << 1; j++){
+				// Test is our point is inside circle
+				double distance = Math.hypot(i - mBrushSize, 
+											 j - mBrushSize);
+											 
+				// If cuttent Cell is far anougth from the center of touching
+				// make this Cell more transparent
+				
+				
+											 
+											 
+				if (distance >= maxDistance-3)
+					mBrushPoints[i][j] = 0;
+				else if (distance >= maxDistance - 6) 
+					mBrushPoints[i][j] = (int) (255 - 255 * distance/maxDistance);
+	
+				else mBrushPoints[i][j] = (int)(Math.random()*255);
+				
+				
+			}
+				
+			
 		Utils.brushRadius = 30; // ????????????????????????????????????????
 		brush.setRadius(Utils.brushRadius, true);
 	}
@@ -205,6 +230,9 @@ Log.d("dr","size "+wd+" "+h);
 		mBrushSize = 0;
 	}
 	
+	int start;
+	long t0;
+	
 	@Override public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getAction();
 		int x = (int)event.getX();
@@ -221,7 +249,10 @@ Log.d("dr","size "+wd+" "+h);
 			case MotionEvent.ACTION_DOWN:
 				
 				if (restOfColor > 0){
-					setCells(x, y);
+					
+					int start = 100;
+					t0 = event.getEventTime();
+					setCells(x, y, start);
 					//mPaint.setColor(mColor);
 					//mCanvas.drawRect(x-mBrushSize, y-mBrushSize,x+mBrushSize, y+mBrushSize, mPaint);
 					N++;
@@ -230,10 +261,17 @@ Log.d("dr","size "+wd+" "+h);
 				
 				break;
 			case MotionEvent.ACTION_MOVE:
+				// If we have color in the brush
 				if (restOfColor > 0){
 					
-					setCells(x, y);
+					double d = Math.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0));
+					long t = event.getEventTime();
+					double v = d/t;
 					
+					Log.d("","move== "+d+" "+t+" "+v);
+					
+					setCells(x, y, start);
+					// Draw Cells from the start of movin to the end
 					float dX;
 					float dY;
 					
@@ -255,19 +293,22 @@ Log.d("dr","size "+wd+" "+h);
 					
 					for (int i = 0; i < n; i++)
 					{
-						setCells((int)tX, (int)tY);
+						setCells((int)tX, (int)tY, start);
 						tX += dX;
 						tY += dY;
 					}
 					
+					start--;
 					restOfColor--;
 					N++;
 					
 				} else 
+				// Brush is empty. Get color from the vanvas
 					getColorFromTheCanvas(x, y);
 				
 				break;
 			case MotionEvent.ACTION_UP:
+				/*
 				for (int i = 0; i < cellsCountHor; i++)
 					for (int j = 0; j < cellsCountVert; j++)
 					{
@@ -309,69 +350,75 @@ Log.d("dr","size "+wd+" "+h);
 							
 						}
 						
-					}
-				
+					}*/
+				t0 = event.getEventTime();
 				x0 = -1;
 				y0 = -1;
 				invalidate();
 				return true;
 		}
-
+		t0 = event.getEventTime();
 		x0 = x;
 		y0 = y;
 		invalidate();
 		return true;
 	}
 
-	private void setCells(int x, int y)
+	/**
+	* Set color of the cells, covered by the brush
+	x, t are the coordinates of the toaching or moving
+	**/
+	private void setCells(int x, int y, int start)
 	{
 		if (x0 == -1)
 			return;
 			
 		//if (NNN > 0)
 			//return;
-		
+		// Translate screen coordinayes to the coordinates of the boofer
 		int nX = x/CELLSIZE;
 		int nY = y/CELLSIZE;
 		
-		int tempmBrushSize = mBrushSize;
+		//int tempmBrushSize = mBrushSize;
 		
-		for (int i = nX - mBrushSize; i <= nX + mBrushSize; i++)
-			for (int j = nY - mBrushSize; j <= nY + mBrushSize; j++){
+		
+		int size;
+		if (start <= 0)
+			size= mBrushSize;
+		else size = mBrushSize >> 1;
+		
+		// Repeet for all point ofthe brush
+		for (int i = nX - size; i < nX + size; i++)
+			for (int j = nY - size; j < nY + size; j++){
+				// Test for the bounds of the buffer
 				if ( i < 0 || j < 0 || i >= cellsCountHor || j >= cellsCountVert) 
 					continue;
 
-				double distance = Math.hypot(nX-i, nY-j);
 				
-				if (distance >= maxDistance-3)
-					continue;
 				
+				// Create new Pixel in the current Cell
 				cells[i][j].pixel = new Pixel(mPixel);
 				cells[i][j].color = mColor;
 				cells[i][j].painted = false;
 				
+				// TO DO SOMETHING
 				if (cells[i][j].pixel == null){
 					cells[i][j].pixel = new Pixel(mPixel);
 					cells[i][j].color = mColor;
 				}
 				else if (cells[i][j].color == mColor){
-					
 				}
-				else {
+				else {////
 					cells[i][j].pixel.add(mPixel, true); 
 					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel);
 				}
 				
-
-				cells[i][j].alpha = 255;
+				//Log.d("",""+(i-nX+mBrushSize)+"***"+(j-nY+mBrushSize));
+				cells[i][j].alpha = mBrushPoints[i-nX+size][j-nY+size];
 				
-				if (distance >= maxDistance - 6) {
-					cells[i][j].alpha = (int) (255 - 255 * distance/maxDistance);
-					if (restOfColor < 20){
-						cells[i][j].alpha = cells[i][j].alpha / (20 - restOfColor);
-					}
-				}
 				
+				/*
+				/* REMOVE IT
 				if (distance >= maxDistance - 8) {
 					int x01 = x0 + (x - x0);
 					int x11 = x + (x - x0);
@@ -395,7 +442,8 @@ Log.d("dr","size "+wd+" "+h);
 					}
 				} else
 					cells[i][j].height = 0;
-
+*/
+				// Draw the cell
 				mPaint.setColor(cells[i][j].color);
 				mPaint.setAlpha(cells[i][j].alpha);
 
