@@ -18,7 +18,7 @@ public final class Utils
 	static int brushRadius = 0;
 	
 	static String PROGRAMM_FOLDER = "xolosoft";
-	static String APP_FOLDER = Environment.getExternalStorageDirectory().getPath()+"/"+PROGRAMM_FOLDER+"/RYBLite";
+	static String APP_FOLDER = Environment.getExternalStorageDirectory().getPath()+"/"+PROGRAMM_FOLDER+"/RYB";
 	
 	public static byte[] buffer;
 	public static float mPercentAdd = 1f;

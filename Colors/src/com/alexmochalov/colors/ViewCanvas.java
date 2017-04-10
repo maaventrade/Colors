@@ -61,7 +61,7 @@ public class ViewCanvas extends View
 	int cellsCountVert;
 
 
-	private Brush brush;
+	private Brush mBrush;
 
 	int N = 0;
 
@@ -96,6 +96,11 @@ public class ViewCanvas extends View
 	private float mCurSize;
 	private int mCurWidth;
 
+	MyCallback callback = null;
+	
+	interface MyCallback {
+		void callbackACTION_DOWN(Brush brush); 
+	} 
 
 	public ViewCanvas(Context c)
 	{
@@ -116,14 +121,14 @@ public class ViewCanvas extends View
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
 		mPaint.setARGB(255, 255, 255, 255);
-		brush = new Brush(mContext);
+		mBrush = new Brush(mContext);
 
 		mBrushSize = 11;
 
 		fillBrush();
 
 		Utils.brushRadius = 30; // ????????????????????????????????????????
-		brush.setRadius(Utils.brushRadius, true);
+		mBrush.setRadius(Utils.brushRadius, true);
 	}
 
 	private void fillBrush()
@@ -265,7 +270,7 @@ public class ViewCanvas extends View
 		restOfColor = 100;
 
 	}
-
+	
 	public void setBrushSize(int size)
 	{
 		mBrushSize = size;
@@ -283,7 +288,7 @@ public class ViewCanvas extends View
 			mAlpha = cells[nX][nY].alpha;
 			restOfColor = cells[nX][nY].alpha / 5;
 
-			brush.setColor(mPixel);
+			mBrush.setColor(mPixel);
 		}
 	}
 
@@ -312,28 +317,22 @@ public class ViewCanvas extends View
 		int x = (int)event.getX();
 		int y = (int)event.getY();
 
-		if (x0 == -1)
-		{
-			x0 = x;
-			y0 = y;
-
-			return true;
-		}
-
 		switch (action)
 		{
 			case MotionEvent.ACTION_DOWN:
+				if (callback != null)
+					callback.callbackACTION_DOWN(mBrush);
 
 				if (restOfColor > 0)
 				{
 
 					t0 = event.getEventTime();
-					setCells(x, y, 0, 0, 0);
+					setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
 
 					N++;
 				}
-				else; 
-				getColorFromTheCanvas(x, y);
+				//else 
+				//getColorFromTheCanvas(x, y);
 
 				break;
 			case MotionEvent.ACTION_MOVE:
@@ -347,7 +346,7 @@ public class ViewCanvas extends View
 
 						double v = d / (t - t0);
 
-						setCells(x, y, v, x - x0, y - y0);
+						setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, v, x - x0, y - y0);
 
 						// Draw Cells from the start of movin to the end
 						float dX;
@@ -374,7 +373,7 @@ public class ViewCanvas extends View
 
 						for (int i = 0; i < n; i++)
 						{
-							setCells((int)tX, (int)tY, v, x - x0, y - y0);
+							setCells((tX-offsetX)/kZooming, (tY-offsetY)/kZooming, v, x - x0, y - y0);
 							tX += dX;
 							tY += dY;
 						}
@@ -471,7 +470,7 @@ public class ViewCanvas extends View
 	 * Set color of the cells, covered by the brush
 	 x, t are the coordinates of the toaching or moving
 	 **/
-	private void setCells(int x, int y, double v, int dx, int dy)
+	private void setCells(double d, double e, double v, int dx, int dy)
 	{
 		if (x0 == -1)
 			return;
@@ -479,8 +478,8 @@ public class ViewCanvas extends View
 		//if (NNN > 0)
 		//return;
 		// Translate screen coordinayes to the coordinates of the boofer
-		int nX = x / CELLSIZE;
-		int nY = y / CELLSIZE;
+		int nX = (int) (d / CELLSIZE);
+		int nY = (int) (e / CELLSIZE);
 
 		//int tempmBrushSize = mBrushSize;
 
@@ -566,28 +565,6 @@ public class ViewCanvas extends View
 
 	}
 
-	/*
-	 private void drawPoint(float x, float y, float pressure, float size) {
-	 mCurX = (int)x;
-	 mCurY = (int)y;
-	 if (size == 0 && pressure != 1)
-	 size = pressure/2;
-
-	 mCurPressure = pressure;
-	 mCurSize = size;
-
-	 mCurWidth = (int)(mCurSize*(brush.getSize()));
-	 if (mCurWidth < 1) mCurWidth = 1;
-
-	 int n = mCurWidth*2;
-
-	 mPaint.setColor(Color.BLUE);
-	 if (mBitmap != null)
-	 items.add(new Item(mCurX, mCurY, mCurWidth, brush));
-
-	 }
-	 */
-
 	public Bitmap getBitmap()
 	{
 		return mBitmap;
@@ -597,7 +574,6 @@ public class ViewCanvas extends View
 	{
 		return N;
 	}
-
 
 	protected void onResume(SharedPreferences prefs)
 	{
@@ -663,13 +639,22 @@ public class ViewCanvas extends View
 
 	public Brush getBrush()
 	{
-		return brush;
+		return mBrush;
 	}
 
 	public void addColor(Pixel pixel)
 	{
-		brush.addColor(pixel);
-		setColor(brush.getPixel());
+		mBrush.addColor(pixel);
+		setColor(mBrush.getPixel());
+	}
+
+	public void setBrush(Brush brush2) {
+		
+	}
+
+	public void copyBrush(Brush v) {
+		mBrush.copy(v);
+		setColor(mBrush.getPixel());
 	}
 
 

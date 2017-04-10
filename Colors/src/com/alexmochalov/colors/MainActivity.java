@@ -1,5 +1,7 @@
 package com.alexmochalov.colors;
 
+import java.io.File;
+
 import com.example.draw.R;
 
 import android.annotation.SuppressLint;
@@ -9,6 +11,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -28,6 +31,7 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity implements View.OnClickListener {
+
 	ViewCanvas viewCanvas;
 	
 	Context mContext;
@@ -40,7 +44,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private RelativeLayout root = null;
 	private LinearLayout menu = null;
 	private LinearLayout submenu = null;
-	private LinearLayout submenu1 = null;
+	
+	private ViewSubmenu viewSubmenu;
+	
+	//private LinearLayout submenu1 = null;
 	private LinearLayout submenu2 = null;
 	private LinearLayout submenu3 = null;
 	private LinearLayout submenuSizes = null;
@@ -49,7 +56,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	
 	// Temporary Utilsiables to create interface
 	private Tube tube;
-	private ToolSize toolSize = null;
+	//private ToolSize toolSize = null;
 	private Tool toolOpaque = null;
 	
 	private boolean rootVisible = true;
@@ -101,6 +108,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	protected void onResume() {
 		super.onResume();
 		
+		File file = new File(Utils.APP_FOLDER);
+		if(!file.exists()){                          
+			file.mkdirs();                  
+		}
+		
 		Utils.initBG(this);
 		
 		viewCanvas = (ViewCanvas)this.findViewById(R.id.viewCanvas);
@@ -111,6 +123,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int idBG = prefs.getInt("PREFS_BG", R.drawable.canvas0);
 		viewCanvas.setBG(idBG, this);
+		
+		viewCanvas.callback = new ViewCanvas.MyCallback(){
+			// When some brush is used lets add it to the list (submenu)
+			@Override
+			public void callbackACTION_DOWN(Brush brush) {
+				if (viewSubmenu != null)
+					viewSubmenu.insertBrush(brush);
+				else
+					Log.d("", "viewSubmenu = NULL !!!??? ");
+			}
+		};
+		
+		// Load the list of the used brushes
+		viewSubmenu.loadBrushes(viewCanvas);
+		
 	}	
 	
 	@Override
@@ -138,13 +165,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	@SuppressLint("NewApi")
 	private void createMenu(){
-		
 		root = (RelativeLayout) findViewById(R.id.root);
 		menu = (LinearLayout) findViewById(R.id.menu);
 	    submenu = (LinearLayout) findViewById(R.id.submenu);
 		submenu.setVisibility(View.INVISIBLE);
 
-		submenu1 = (LinearLayout) findViewById(R.id.submenu1);
+		viewSubmenu = (ViewSubmenu) findViewById(R.id.submenu1);
+		viewSubmenu.initValues(this);
+		
+		//submenu1 = (LinearLayout) findViewById(R.id.submenu1);
 		submenu2 = (LinearLayout) findViewById(R.id.submenu2);
 		//read();
 
@@ -197,6 +226,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		menu.addView(tube);
 
 		//-------------- SUBMENU size -----------------------
+		/*
 		toolSize = new ToolSize(this);
 		toolSize.setViewCanvas(viewCanvas);
 		toolSize.callback = new ToolSize.Listener(){
@@ -207,6 +237,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			}
 		};
 		menu.addView(toolSize);
+		*/
 		
 		//-------------- \SUBMENU size -----------------------
 
@@ -219,20 +250,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		}
 		
 		
-		for (int i = 0; i<MIXES_COUNT; i++){
-			mixes[i] = new Brush(this);
-			mixes[i].setRadius(Utils.brushRadius, false);
-			submenu1.addView(mixes[i]);
-			mixes[i].setOnClickListener(new OnClickListener(){
-					@Override
-					public void onClick(View v) {
-						submenu.setVisibility(View.INVISIBLE);
-						submenuVisible = false;
-						brush.copy((Brush)v);
-					}});
-		}
-
-		
+		viewSubmenu.callback = new ViewSubmenu.MyCallback() {
+			@Override
+			public void callbackSELECTED(Brush v) {
+				submenu.setVisibility(View.INVISIBLE);
+				submenuVisible = false;
+				viewCanvas.copyBrush(v);
+			}
+		};
 		
 		final Tool toolSpread = new Tool(this);
 		toolSpread.setMode(Utils.Mode.spread, BitmapFactory.decodeResource(getResources(), R.drawable.spread));
@@ -462,5 +487,48 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 		//Toast.makeText(this, "Var.brushWidth "+Var.brushWidth, Toast.LENGTH_LONG).show();
 	}
+
+	@Override
+	  protected void onPause(){
+		  super.onPause();
+		  //Editor editor = prefs.edit();
+		  // The ViewCanvas doesnt have its own method onPause
+		  //viewCanvas.onPause(this, editor);
+		  // Save the list of the used brushes
+		  viewSubmenu.saveBrushes();
+		  viewSubmenu.clearBrushes();
+		  viewSubmenu = null;
+
+		  /*
+		  //editor.putInt(PREFS_CANVAS_COLOR, palette.getCanvasColor());
+		  editor.putInt(PREFS_BRUSH_RADIUS, Var.brushRadius);
+		  editor.putString(PREFS_FILENAME, fileName);
+		  editor.putString(PREFS_INIT_PATH, initPath);
+		  editor.putBoolean(PREFS_FIRST_START, false);
+		  editor.putInt("PREFS_BG", viewCanvas.getIdBG());
+		  
+		  editor.apply();
+		  // To avoid memory leaking
+		  if (mHandler != null)
+			  mHandler.removeCallbacksAndMessages(null);
+		  viewSubmenu = null;
+		  viewCanvas = null;
+		  
+		  brush = null;
+		  viewCanvas = null;
+		  
+		  root = null;
+		  menu = null;
+		  submenu = null;
+		  viewSubmenu = null;
+		  submenu2 = null;
+		  submenu3 = null;
+		  submenu4 = null;
+			
+		  /////  Tube tube; tube = null;
+		  toolSize = null;
+		  toolOpaque = null;
+		  */
+	  }
 	
 }
