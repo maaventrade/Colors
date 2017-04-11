@@ -222,8 +222,8 @@ public class ViewCanvas extends View
 
 		Log.d("dr", "size " + wd + " " + h);
 
-		cellsCountHor = wd / CELLSIZE;
-		cellsCountVert = h / CELLSIZE;
+		cellsCountHor = width / CELLSIZE;
+		cellsCountVert = height / CELLSIZE;
 
 		if (cells == null)
 		{

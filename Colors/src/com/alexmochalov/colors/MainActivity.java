@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	
 	// Temporary Utilsiables to create interface
 	private Tube tube;
-	//private ToolSize toolSize = null;
+	private ToolSize toolSize = null;
 	private Tool toolOpaque = null;
 	
 	private boolean rootVisible = true;
@@ -225,23 +225,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		tube.setBrush(viewCanvas);
 		menu.addView(tube);
 
-		//-------------- SUBMENU size -----------------------
-		/*
-		toolSize = new ToolSize(this);
-		toolSize.setViewCanvas(viewCanvas);
-		toolSize.callback = new ToolSize.Listener(){
-			@Override
-			public void callbackVALUE_CHANGED(int value)
-			{
-				viewCanvas.setBrushSize(value);
-			}
-		};
-		menu.addView(toolSize);
-		*/
-		
-		//-------------- \SUBMENU size -----------------------
-
-		
+	
 		if (!ViewConfiguration.get(this).hasPermanentMenuKey()){
 			optionsSubmenu = new Tool(this);
 			optionsSubmenu.setMode(2, BitmapFactory.decodeResource(getResources(), R.drawable.menu));
@@ -258,6 +242,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				viewCanvas.copyBrush(v);
 			}
 		};
+		
+		//-------------- SUBMENU size -----------------------
+		
+		 toolSize = new ToolSize(this);
+		 toolSize.setViewCanvas(viewCanvas);
+		 toolSize.callback = new ToolSize.Listener(){
+		 @Override
+		 public void callbackVALUE_CHANGED(int value)
+		 {
+		 viewCanvas.setBrushSize(value);
+		 }
+		 };
+		submenu2.addView(toolSize);
+		 
+
+		//-------------- \SUBMENU size -----------------------
+
+		
 		
 		final Tool toolSpread = new Tool(this);
 		toolSpread.setMode(Utils.Mode.spread, BitmapFactory.decodeResource(getResources(), R.drawable.spread));

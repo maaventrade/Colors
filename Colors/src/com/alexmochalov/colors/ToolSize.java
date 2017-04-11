@@ -67,11 +67,13 @@ public class ToolSize extends ImageView{
 		mViewCanvas = viewCanvas;
 	}
 	
+	private final int h = 2;
+	private final int w = 10;
 	
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(Utils.brushWidth*2, Utils.brushWidth*10);
-        rectD = new Rect(0,0,Utils.brushWidth*2,Utils.brushWidth*10);
+        setMeasuredDimension(Utils.brushWidth*w, Utils.brushWidth*h);
+        rectD = new Rect(0,0,Utils.brushWidth*w,Utils.brushWidth*h);
     }
 	
     @Override
