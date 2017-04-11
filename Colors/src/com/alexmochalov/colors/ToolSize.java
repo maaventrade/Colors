@@ -12,7 +12,7 @@ public class ToolSize extends ImageView{
 	private ViewCanvas mViewCanvas;
 	
 	private boolean mVisible = true;
-	private boolean mExpanded = false;
+	private boolean mExpanded = true;
 	private boolean mMoved = false;
 	
 	private Paint paint;
@@ -21,7 +21,6 @@ public class ToolSize extends ImageView{
 	
 	private int MIN = 1;
 	private int MAX = 11;
-	private float value = 1;
 	/*
 	 public OnTestedListener mCallback;
 
@@ -67,13 +66,10 @@ public class ToolSize extends ImageView{
 		mViewCanvas = viewCanvas;
 	}
 	
-	private final int h = 2;
-	private final int w = 10;
-	
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(Utils.brushWidth*w, Utils.brushWidth*h);
-        rectD = new Rect(0,0,Utils.brushWidth*w,Utils.brushWidth*h);
+        setMeasuredDimension(Utils.brushWidth*10, Utils.brushWidth*2);
+        rectD = new Rect(0,0,Utils.brushWidth*10,Utils.brushWidth*2);
     }
 	
     @Override
@@ -93,31 +89,38 @@ public class ToolSize extends ImageView{
     	paint.setAlpha(255);
     	paint.setStyle(Paint.Style.STROKE);
 
-    	canvas.drawRect(0, 0, getWidth(), getWidth(), paint);
+    	canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
     	
     	paint.setTextSize(32);
-    	canvas.drawText(""+(int)value, 4, 30, paint);
+    	canvas.drawText(""+(int)mViewCanvas.getBrushSize(), 4, 30, paint);
     	
-    	if (mExpanded){
-        	canvas.drawRect(0, getWidth(), getWidth(), getHeight(), paint);
-        	paint.setStrokeWidth(3);
+    	//if (mExpanded){
+        	paint.setStrokeWidth(6);
 			paint.setColor(Color.GRAY);
-        	canvas.drawLine(getWidth()/2, getWidth()+8, getWidth()/2, getHeight()-8, paint);
-        	//canvas.drawLine(8, getHeight()-8, getWidth()- 8, getWidth()+8, paint);
-        	//canvas.drawLine(8, getWidth()+8, getWidth()- 8, getWidth()+8, paint);
+			
+			int h8 = getHeight()+8;
+			int h2 = getHeight()/2;
+			int w = getWidth();
+			
+        	canvas.drawLine(h2, h2 , w - h2, h2, paint);
         	
-        	int h = getHeight()-8 - (getWidth()+8);
-        	int pos = (int) ((h/(MAX-MIN) * (value-1)))+getWidth()+8;
+        	int h = w - getHeight();
+        	int pos = (int) ((h/(MAX-MIN) * (mViewCanvas.getBrushSize()-1)))+h2;
         	
 			paint.setStrokeWidth(8);
 			paint.setColor(Color.rgb(200,200,255));
-			canvas.drawLine(getWidth()/2, getWidth()+8, getWidth()/2, pos, paint);
+			canvas.drawLine(h2, h2, pos, h2, paint);
 			
 			paint.setStrokeWidth(1);
 			paint.setColor(Color.BLUE);
 			paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        	canvas.drawRect(new Rect(4, pos, getWidth()-4, pos+4), paint);
-    	}
+        	canvas.drawCircle(pos, h2 , h2 >> 1, paint);
+        	
+			paint.setColor(Color.rgb(200,200,255));
+        	canvas.drawCircle(pos, h2 , (h2 >> 1) - 2, paint);
+        	
+    	//}
+        	paint.setStrokeWidth(1);
     }
 
     @Override
@@ -129,8 +132,8 @@ public class ToolSize extends ImageView{
         	case MotionEvent.ACTION_UP:
         		if (mExpanded && mMoved){
         			mExpanded = false;
-        		} else if (mExpanded && y < getWidth()){
-					mExpanded = false;
+        		//} else if (mExpanded && y < getWidth()){
+				//	mExpanded = false;
 				} else if (!mExpanded && y < getWidth()){
         			mMoved = false;
         			mExpanded = true;
@@ -140,23 +143,28 @@ public class ToolSize extends ImageView{
                 invalidate();
         		return true;
         	case MotionEvent.ACTION_DOWN:
-        		
+				if (mExpanded){
+					mMoved = true;
+					int h2 = getHeight()/2;
+		        	int h = getWidth() - getHeight();
+					float value = (x-h2)/h*(MAX-MIN)+1; 
+					value = Math.min(Math.max(value, MIN), MAX); 
+					if (callback != null)
+						callback.callbackVALUE_CHANGED((int)value);
+					invalidate();
+				}
         			
                 invalidate();
         		return true;
         	case MotionEvent.ACTION_MOVE:
 				if (mExpanded){
 					mMoved = true;
-
-					int h = getHeight()-8 - (getWidth()+8);
-					value = (y)/h*(MAX-MIN)+1;
-
+					int h2 = getHeight()/2;
+		        	int h = getWidth() - getHeight();
+					float value = (x-h2)/h*(MAX-MIN)+1; 
 					value = Math.min(Math.max(value, MIN), MAX); 
-
 					if (callback != null)
 						callback.callbackVALUE_CHANGED((int)value);
-        			
-					
 					invalidate();
 				}
         		

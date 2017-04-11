@@ -657,6 +657,10 @@ public class ViewCanvas extends View
 		setColor(mBrush.getPixel());
 	}
 
+	public float getBrushSize() {
+		return mBrushSize;
+	}
+
 
 }
 
