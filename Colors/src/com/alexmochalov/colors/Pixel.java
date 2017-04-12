@@ -19,6 +19,13 @@ public class Pixel {
 		this.blue = 0;
 		this.white = 0;
 	}
+	
+	public Pixel(){
+		this.red = 0;
+		this.yellow = 0;
+		this.blue = 0;
+		this.white = 0;
+	}
 
 	public Pixel(Pixel source){
 		this.red = source.red;
@@ -125,10 +132,10 @@ public class Pixel {
 		if (pixel == null) return;
 		this.modified = modified;
 		
-		float rr = 100/ Utils.mPercent * red + 50/Utils.mPercent * pixel.red ;   
-		float yy = 100/ Utils.mPercent * yellow + 50/Utils.mPercent * pixel.yellow ;   
-		float bb = 100/ Utils.mPercent * blue + 50/Utils.mPercent * pixel.blue ; 
-		float ww = 100/ Utils.mPercent * white + 50/Utils.mPercent * pixel.white ; 
+		float rr = 100/ Utils.mPercent * red + 100/Utils.mPercent * pixel.red ;   
+		float yy = 100/ Utils.mPercent * yellow + 100/Utils.mPercent * pixel.yellow ;   
+		float bb = 100/ Utils.mPercent * blue + 100/Utils.mPercent * pixel.blue ; 
+		float ww = 100/ Utils.mPercent * white + 100/Utils.mPercent * pixel.white ; 
 		
 		red = (short) (rr / (rr + yy + bb + ww) * Utils.mPercent);
 		yellow = (short) (yy / (rr + yy + bb + ww) * Utils.mPercent);

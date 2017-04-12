@@ -33,16 +33,17 @@ public class ViewCanvas extends View
 	class Cell
 	{
 		int color;
-		int alpha;
+		byte alpha;
 		Pixel pixel = null;
 		int height;
 		boolean painted = false;
 	}
+	
 	Cell cells[][] = null;
 
 	private int mBrushSize = 0; // 1 - 10
 
-	private int[][] mBrushPoints = null;
+	private byte[][] mBrushPoints = null;
 	//private int[][] mBrushPoints1 = null;
 	//private int[][] mBrushPoints2 = null;
 
@@ -73,8 +74,6 @@ public class ViewCanvas extends View
 	int height;
 
 	int CELLSIZE = 5;
-
-	double maxDistance;
 
 	private int offsetX = 0;
 	private int offsetY = 0;
@@ -133,11 +132,13 @@ public class ViewCanvas extends View
 
 	private void fillBrush()
 	{
-		maxDistance = Math.hypot(mBrushSize, mBrushSize);
+		//double maxDistance = Math.hypot(mBrushSize, mBrushSize);
 
 		int mBrushSize2 = mBrushSize << 1;
 
-		mBrushPoints = new int[mBrushSize2][mBrushSize2];
+		ArrayList<Point> points = new ArrayList<Point>();
+		
+		mBrushPoints = new byte[mBrushSize2][mBrushSize2];
 		for (int i = 0; i < mBrushSize2; i++)
 			for (int j = 0; j < mBrushSize2; j++)
 			{
@@ -147,51 +148,25 @@ public class ViewCanvas extends View
 
 				// If cuttent Cell is far anougth from the center of touching
 				// make this Cell more transparent
-				
 				int n1 = 0;
 				if (mBrushSize > 3)
 					n1 = 3;
 				
-				if (distance >= maxDistance - n1)
+				if (distance > mBrushSize)
 					mBrushPoints[i][j] = 0;
-				else if (distance >= maxDistance - n1 * 2) 
-					mBrushPoints[i][j] = (int) (255 - 255 * distance / maxDistance);
-
-				else mBrushPoints[i][j] = 255;//(int)(Math.random() * 255);
+				else if (distance >= mBrushSize - (mBrushSize >> 2)) 
+					mBrushPoints[i][j] = (byte) (255 - 255 * distance / (mBrushSize << 1));
+				else {
+					mBrushPoints[i][j] = (byte) (128 + (byte)(Math.random() * 128));
+					if (mBrushPoints[i][j] < 130)
+						points.add(new Point(i,j));
+				}
 			}
 
-		//mBrushPoints1 = new int[mBrushSize2][mBrushSize2];
-		//mBrushPoints2 = new int[mBrushSize2][mBrushSize2];
-		/*
-		for (int i = 0; i < mBrushSize2; i++)
-			for (int j = 0; j < mBrushSize2; j++)
-			{
-				mBrushPoints1[i][j] = mBrushPoints[i][j] >> 1;
-				mBrushPoints2[i][j] = mBrushPoints[i][j] >> 1;
-			}
-/*
-		for (int i = 0; i < mBrushSize2; i++)
-			for (int j = 0; j < mBrushSize2; j++)
-			{
-				if (mBrushPoints[i][j] < 10)
-				{
-					for (int k = -3; k < 3; k++)
-						if (i + k >= 0 && i + k < mBrushSize2)
-							mBrushPoints2[i + k][j] = (int) ((float)mBrushPoints[i + k][j] / 0.9);
-				}
-			}*/
-			/*
-		ArrayList<Point> points = new ArrayList<Point>();
-		for (int i = 0; i < mBrushSize2; i++)
-			for (int j = 0; j < mBrushSize2; j++){
-				mBrushPoints2[i][j] = mBrushPoints[i][j];
-				if (mBrushPoints[i][j] < 20)
-					points.add(new Point(i,j));
-				}
 				
 		for (Point p: points)
 			for (int i = p.x; i < mBrushSize2; i++)
-				mBrushPoints2[i][p.y] = mBrushPoints2[i][p.y]  >> 1;*/
+				mBrushPoints[i][p.y] = (byte) (mBrushPoints[i][p.y] >> 1);
 					
 	}
 
@@ -234,14 +209,15 @@ public class ViewCanvas extends View
 		{
 			cells = new Cell[cellsCountHor][cellsCountVert];
 			for (int i = 0; i < cellsCountHor; i++)
-				for (int j = 0; j < cellsCountVert; j++)
+				for (int j = 0; j < cellsCountVert; j++){
 					cells[i][j] = new Cell();
-			;
-
+					cells[i][j].pixel = new Pixel();
+					cells[i][j].color = 0;
+				}	
 		}
 
-		//load(Var.APP_FOLDER+"/screen.png");
-		load("/screen.png");
+		load(Utils.APP_FOLDER+"/screen");
+		//load("/screen.png");
 
 		if (offsetX > width) offsetX = 0;
 		if (offsetY > height) offsetY = 0;
@@ -322,6 +298,12 @@ public class ViewCanvas extends View
 		int action = event.getAction();
 		int x = (int)event.getX();
 		int y = (int)event.getY();
+		
+		if (x0 == -1){
+			x0 = x;
+			y0 = y;
+		}
+		
 
 		switch (action)
 		{
@@ -333,7 +315,7 @@ public class ViewCanvas extends View
 				//{
 
 					t0 = event.getEventTime();
-					setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
+					//setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
 
 					N++;
 				//}
@@ -448,8 +430,8 @@ public class ViewCanvas extends View
 			case MotionEvent.ACTION_POINTER_UP:
 				PointerCoords coord0 = new PointerCoords();
 				event.getPointerCoords(0, coord0);
-				x0 = 0;//(int) coord0.x;
-				y0 = 0;// (int) coord0.y;
+				x0 = -1;//(int) coord0.x;
+				y0 = -1;// (int) coord0.y;
 				resize = false;
 				pointerUp = true;
 				distance = 0;
@@ -493,9 +475,6 @@ public class ViewCanvas extends View
 
 		int mBrushSize2 = mBrushSize << 1;
 
-
-
-
 		// Repeet for all point ofthe brush
 		for (int i = nX - size; i < nX + size; i++)
 			for (int j = nY - size; j < nY + size; j++)
@@ -506,10 +485,10 @@ public class ViewCanvas extends View
 
 
 				// Create new Pixel in the current Cell
-				cells[i][j].pixel = new Pixel(mPixel);
-				cells[i][j].color = mColor;
-				cells[i][j].painted = false;
-
+				//cells[i][j].pixel = new Pixel(mPixel);
+				//cells[i][j].color = mColor;
+				//cells[i][j].painted = false;
+/*
 				// TO DO SOMETHING
 				if (cells[i][j].pixel == null)
 				{
@@ -520,16 +499,10 @@ public class ViewCanvas extends View
 				{
 				}
 				else
-				{////
+				{*/
 					cells[i][j].pixel.add(mPixel, true); 
 					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel);
-				}
-
-				//Log.d("",""+(i-nX+mBrushSize)+"***"+(j-nY+mBrushSize));
-				//if (v <= 2)
-				//	cells[i][j].alpha = mBrushPoints[i-nX+size][j-nY+size];
-				//else {
-
+				//}
 
 				double inRads = Math.atan2(dy, dx);
 
@@ -593,9 +566,118 @@ public class ViewCanvas extends View
 
 	public void onPause(Context context, Editor editor)
 	{
+//		editor.putInt(PREFS_OFFSETX, offsetX);
+//		editor.putInt(PREFS_OFFSETY, offsetY);
+//		editor.putFloat(PREFS_K, (float)kZooming);
+
+//		editor.putInt(PREFS_BRUSH_TRANSP, brush.getTransparency());
+//		editor.putInt(PREFS_BRUSH_SIZE, brush.getSize0());
+		
+		save(Utils.APP_FOLDER+"/screen");
 	}
 
-	public void load(String fileName)
+	private boolean save(String fileName) {
+		FileOutputStream out = null;
+
+		Log.d("","SAVE ...");
+		
+		try {
+		    out = new FileOutputStream(fileName);
+
+		    String fileName1 = fileName.replaceFirst("[.][^.]+$", "")+".plt";
+		    
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName1));
+			
+			for (int i = 0; i < cellsCountHor; i++)
+				for (int j = 0; j < cellsCountVert; j++){
+					bos.write(cells[i][j].alpha);
+					bos.write(cells[i][j].pixel.red);
+					bos.write(cells[i][j].pixel.yellow);
+					bos.write(cells[i][j].pixel.blue);
+					bos.write(cells[i][j].pixel.white);
+				}		
+			
+			bos.flush();
+			bos.close();
+			Log.d("","SAVED.");
+		} catch (Exception e) {
+			Log.d("", "ERROR "+e);
+		    e.printStackTrace();
+			return false;
+		} finally {
+		    try {
+		        if (out != null) {
+		            out.close();
+		        }
+		    } catch (IOException e) {
+				Log.d("", "ERROR "+e);
+		        e.printStackTrace();
+				return false;
+		    }
+		}	
+		return true;
+	}
+
+
+	private boolean load(String fileName) {
+		FileInputStream in = null;
+		
+		Log.d("","LOAD ...");
+		
+		try {
+		    in = new FileInputStream(fileName);
+
+		    String fileName1 = fileName.replaceFirst("[.][^.]+$", "")+".plt";
+		    
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName1));
+			
+			for (int i = 0; i < cellsCountHor; i++){
+				for (int j = 0; j < cellsCountVert; j++){
+
+					if (bis.available() <= 0) break;
+		            byte b1 = (byte)bis.read();
+		            
+					if (bis.available() <= 0) break;
+		            byte b2 = (byte)bis.read();
+		            
+					if (bis.available() <= 0) break;
+		            byte b3 = (byte)bis.read();
+		            
+					if (bis.available() <= 0) break;
+		            byte b4 = (byte)bis.read();
+		            
+					if (bis.available() <= 0) break;
+		            byte b5 = (byte)bis.read();
+		            
+					cells[i][j].alpha = b1;
+					cells[i][j].pixel = new Pixel(b2, b3, b4, b5);
+					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel); 
+					
+				}	
+				if (bis.available() <= 0) break;
+			}
+			
+			bis.close();
+			Log.d("","LOADED.");
+		} catch (Exception e) {
+			Log.d("", "ERROR "+e);
+		    e.printStackTrace();
+			return false;
+		} finally {
+		    try {
+		        if (in != null) {
+		            in.close();
+		        }
+		    } catch (IOException e) {
+				Log.d("", "ERROR "+e);
+		        e.printStackTrace();
+				return false;
+		    }
+		}	
+		return true;
+	}
+	
+	public void load1(String fileName)
 	{
 		Bitmap newBitmap;
 
@@ -666,29 +748,4 @@ public class ViewCanvas extends View
 	public float getBrushSize() {
 		return mBrushSize;
 	}
-
-
 }
-
-/*int x11 = i-nX+size;
-						int y11 = j-nY+size;
-
-						double inRads = Math.atan2(50, -50);
-						
-						if (inRads < 0)
-					        inRads = Math.abs(inRads);
-					    else
-					        inRads = 2*Math.PI - inRads;
-						
-
-						int x12 = (int) ((x11-size)*Math.cos(inRads) - (y11-size)*Math.sin(inRads)) + size;
-						int y12 = (int) ((x11-size)*Math.sin(inRads) + (y11-size)*Math.cos(inRads)) + size;
-						
-						//x12 = x11;
-						//y12 = y11;
-
-						if (x12 >= 0 && x12 < mBrushSize2 && y12 >=0 && y12 < mBrushSize2){
-							mPaint.setColor(mBrushPoints1[x12][y12]);
-							mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
-									+ CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
-						}	*/

@@ -64,6 +64,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private boolean submenu3Visible = false;
 	private boolean submenu4Visible = false;
 	
+	SharedPreferences prefs;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -120,7 +122,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		createMenu();
 		
 		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int idBG = prefs.getInt("PREFS_BG", R.drawable.canvas0);
 		viewCanvas.setBG(idBG, this);
 		
@@ -137,7 +139,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		
 		// Load the list of the used brushes
 		viewSubmenu.loadBrushes(viewCanvas);
-		
+		viewCanvas.onResume(PreferenceManager.getDefaultSharedPreferences(this));		
 	}	
 	
 	@Override
@@ -493,9 +495,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	@Override
 	  protected void onPause(){
 		  super.onPause();
-		  //Editor editor = prefs.edit();
+		  Editor editor = prefs.edit();
 		  // The ViewCanvas doesnt have its own method onPause
-		  //viewCanvas.onPause(this, editor);
+		  viewCanvas.onPause(this, editor);
 		  // Save the list of the used brushes
 		  viewSubmenu.saveBrushes();
 		  viewSubmenu.clearBrushes();
