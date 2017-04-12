@@ -149,8 +149,9 @@ public class ToolSize extends ImageView{
 		        	int h = getWidth() - getHeight();
 					float value = (x-h2)/h*(MAX-MIN)+1; 
 					value = Math.min(Math.max(value, MIN), MAX); 
-					if (callback != null)
-						callback.callbackVALUE_CHANGED((int)value);
+					mViewCanvas.setBrushSize((int)value);
+					//if (callback != null)
+						//callback.callbackVALUE_CHANGED((int)value);
 					invalidate();
 				}
         			

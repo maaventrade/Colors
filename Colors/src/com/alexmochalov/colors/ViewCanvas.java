@@ -44,7 +44,7 @@ public class ViewCanvas extends View
 
 	private int[][] mBrushPoints = null;
 	//private int[][] mBrushPoints1 = null;
-	private int[][] mBrushPoints2 = null;
+	//private int[][] mBrushPoints2 = null;
 
 	private int mColor = 0; 
 	private int mAlpha = 0;
@@ -123,9 +123,9 @@ public class ViewCanvas extends View
 		mPaint.setARGB(255, 255, 255, 255);
 		mBrush = new Brush(mContext);
 
-		mBrushSize = 11;
-
-		fillBrush();
+		
+		setBrushSize(11);
+		
 
 		Utils.brushRadius = 30; // ????????????????????????????????????????
 		mBrush.setRadius(Utils.brushRadius, true);
@@ -147,16 +147,21 @@ public class ViewCanvas extends View
 
 				// If cuttent Cell is far anougth from the center of touching
 				// make this Cell more transparent
-				if (distance >= maxDistance - 3)
+				
+				int n1 = 0;
+				if (mBrushSize > 3)
+					n1 = 3;
+				
+				if (distance >= maxDistance - n1)
 					mBrushPoints[i][j] = 0;
-				else if (distance >= maxDistance - 6) 
+				else if (distance >= maxDistance - n1 * 2) 
 					mBrushPoints[i][j] = (int) (255 - 255 * distance / maxDistance);
 
-				else mBrushPoints[i][j] = (int)(Math.random() * 255);
+				else mBrushPoints[i][j] = 255;//(int)(Math.random() * 255);
 			}
 
 		//mBrushPoints1 = new int[mBrushSize2][mBrushSize2];
-		mBrushPoints2 = new int[mBrushSize2][mBrushSize2];
+		//mBrushPoints2 = new int[mBrushSize2][mBrushSize2];
 		/*
 		for (int i = 0; i < mBrushSize2; i++)
 			for (int j = 0; j < mBrushSize2; j++)
@@ -175,7 +180,7 @@ public class ViewCanvas extends View
 							mBrushPoints2[i + k][j] = (int) ((float)mBrushPoints[i + k][j] / 0.9);
 				}
 			}*/
-			
+			/*
 		ArrayList<Point> points = new ArrayList<Point>();
 		for (int i = 0; i < mBrushSize2; i++)
 			for (int j = 0; j < mBrushSize2; j++){
@@ -186,7 +191,7 @@ public class ViewCanvas extends View
 				
 		for (Point p: points)
 			for (int i = p.x; i < mBrushSize2; i++)
-				mBrushPoints2[i][p.y] = mBrushPoints2[i][p.y]  >> 1;
+				mBrushPoints2[i][p.y] = mBrushPoints2[i][p.y]  >> 1;*/
 					
 	}
 
@@ -274,7 +279,8 @@ public class ViewCanvas extends View
 	public void setBrushSize(int size)
 	{
 		mBrushSize = size;
-		maxDistance = Math.hypot(mBrushSize, mBrushSize);
+		fillBrush();
+		
 	}
 
 	private void getColorFromTheCanvas(int x, int y)
@@ -323,14 +329,14 @@ public class ViewCanvas extends View
 				if (callback != null)
 					callback.callbackACTION_DOWN(mBrush);
 
-				if (restOfColor > 0)
-				{
+				//if (restOfColor > 0)
+				//{
 
 					t0 = event.getEventTime();
 					setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
 
 					N++;
-				}
+				//}
 				//else 
 				//getColorFromTheCanvas(x, y);
 
@@ -472,8 +478,8 @@ public class ViewCanvas extends View
 	 **/
 	private void setCells(double d, double e, double v, int dx, int dy)
 	{
-		if (x0 == -1)
-			return;
+		//if (x0 == -1)
+			//return;
 		Log.d("bbb", "v " + v);
 		//if (NNN > 0)
 		//return;
@@ -542,9 +548,9 @@ public class ViewCanvas extends View
 					if (v <= 2)
 						cells[i][j].alpha = mBrushPoints[x12][y12];
 					else if (v <= 5)
-						cells[i][j].alpha = mBrushPoints2[x12][y12];
+						cells[i][j].alpha = mBrushPoints[x12][y12];
 					else
-						cells[i][j].alpha = mBrushPoints2[x12][y12];
+						cells[i][j].alpha = mBrushPoints[x12][y12];
 
 
 				//};
