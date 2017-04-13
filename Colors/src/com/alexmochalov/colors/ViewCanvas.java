@@ -122,7 +122,7 @@ public class ViewCanvas extends View
 		mPaint.setARGB(255, 255, 255, 255);
 		mBrush = new Brush(mContext);
 
-		
+		Log.d("cc", "init ");
 		setBrushSize(11);
 		
 
@@ -200,24 +200,11 @@ public class ViewCanvas extends View
 		width = Math.max(wd, h);
 		height = Math.max(wd, h);
 
-		Log.d("dr", "size " + wd + " " + h);
+		Log.d("cc", "size " + wd + " " + h);
 
-		cellsCountHor = width / CELLSIZE;
-		cellsCountVert = height / CELLSIZE;
-
-		if (cells == null)
-		{
-			cells = new Cell[cellsCountHor][cellsCountVert];
-			for (int i = 0; i < cellsCountHor; i++)
-				for (int j = 0; j < cellsCountVert; j++){
-					cells[i][j] = new Cell();
-					cells[i][j].pixel = new Pixel();
-					cells[i][j].color = 0;
-				}	
-		}
-
-		load(Utils.APP_FOLDER+"/screen");
-		//load("/screen.png");
+		
+		
+		load1("/screen.png");
 
 		if (offsetX > width) offsetX = 0;
 		if (offsetY > height) offsetY = 0;
@@ -225,6 +212,19 @@ public class ViewCanvas extends View
 		mRect.set(0, 0, (int)(width * kZooming), (int)(height * kZooming));
 		mRect.offset(offsetX, offsetY);
 
+		for (int i = 0; i < cellsCountHor; i++){
+			for (int j = 0; j < cellsCountVert; j++){
+
+				mPaint.setColor(cells[i][j].color);
+				mPaint.setAlpha(cells[i][j].alpha);
+//Log.d("","mc "+mCanvas);
+				//Log.d("","CELLSIZE "+CELLSIZE);
+				//Log.d("","mPaint "+mPaint);
+				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
+								 + CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
+
+				}}
+		
 		//int i = prefs.getInt(PREFS_BRUSH_TRANSP, 100);
 		//int j = prefs.getInt(PREFS_BRUSH_SIZE, 1003);
 
@@ -462,7 +462,7 @@ public class ViewCanvas extends View
 	{
 		//if (x0 == -1)
 			//return;
-		Log.d("bbb", "v " + v);
+		//Log.d("bbb", "v " + v);
 		//if (NNN > 0)
 		//return;
 		// Translate screen coordinayes to the coordinates of the boofer
@@ -500,8 +500,8 @@ public class ViewCanvas extends View
 				}
 				else
 				{*/
-					cells[i][j].pixel.add(mPixel, true); 
-					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel);
+				
+					
 				//}
 
 				double inRads = Math.atan2(dy, dx);
@@ -517,14 +517,20 @@ public class ViewCanvas extends View
 				int x12 = (int) ((x11 - size) * Math.cos(inRads) - (y11 - size) * Math.sin(inRads)) + size;
 				int y12 = (int) ((x11 - size) * Math.sin(inRads) + (y11 - size) * Math.cos(inRads)) + size;
 
+				//try{
+					cells[i][j].pixel.add(mPixel, true); 
+					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel);
+					
 				if (x12 >= 0 && x12 < mBrushSize2 && y12 >= 0 && y12 < mBrushSize2)
-					if (v <= 2)
 						cells[i][j].alpha = mBrushPoints[x12][y12];
-					else if (v <= 5)
+					
+				/*} catch (Exception ex) {
+					Toast.makeText(mContext, "i "+i+" j "+j, Toast.LENGTH_LONG).show();
+					if (x12 >= 0 && x12 < mBrushSize2 && y12 >= 0 && y12 < mBrushSize2)
 						cells[i][j].alpha = mBrushPoints[x12][y12];
-					else
-						cells[i][j].alpha = mBrushPoints[x12][y12];
-
+					
+				} 
+				*/
 
 				//};
 
@@ -533,7 +539,9 @@ public class ViewCanvas extends View
 				// Draw the cell
 				mPaint.setColor(cells[i][j].color);
 				mPaint.setAlpha(cells[i][j].alpha);
-
+//Log.d("","mc "+mCanvas);
+				//Log.d("","CELLSIZE "+CELLSIZE);
+				//Log.d("","mPaint "+mPaint);
 				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
 								 + CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
 
@@ -556,6 +564,23 @@ public class ViewCanvas extends View
 
 	protected void onResume(SharedPreferences prefs)
 	{
+		Log.d("cc", "resume ");
+		
+		cellsCountHor = 300;
+		cellsCountVert = 300;
+
+		if (cells == null)
+		{
+			cells = new Cell[cellsCountHor][cellsCountVert];
+			for (int i = 0; i < cellsCountHor; i++)
+				for (int j = 0; j < cellsCountVert; j++){
+					cells[i][j] = new Cell();
+					cells[i][j].pixel = new Pixel();
+					cells[i][j].color = 0;
+				}	
+		}
+		
+		load(Utils.APP_FOLDER+"/screen");
 	}
 
 	@Override protected void onDetachedFromWindow()
@@ -617,12 +642,13 @@ public class ViewCanvas extends View
 		}	
 		return true;
 	}
-
+	
+	
 
 	private boolean load(String fileName) {
 		FileInputStream in = null;
 		
-		Log.d("","LOAD ...");
+		Log.d("cc","LOAD ..."+cellsCountHor+" "+cellsCountVert);
 		
 		try {
 		    in = new FileInputStream(fileName);
@@ -630,7 +656,7 @@ public class ViewCanvas extends View
 		    String fileName1 = fileName.replaceFirst("[.][^.]+$", "")+".plt";
 		    
 			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName1));
-			
+			int n = 0;
 			for (int i = 0; i < cellsCountHor; i++){
 				for (int j = 0; j < cellsCountVert; j++){
 
@@ -653,6 +679,9 @@ public class ViewCanvas extends View
 					cells[i][j].pixel = new Pixel(b2, b3, b4, b5);
 					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel); 
 					
+					
+					
+				
 				}	
 				if (bis.available() <= 0) break;
 			}
@@ -660,8 +689,7 @@ public class ViewCanvas extends View
 			bis.close();
 			Log.d("","LOADED.");
 		} catch (Exception e) {
-			Log.d("", "ERROR "+e);
-		    e.printStackTrace();
+			Toast.makeText(mContext, e.toString(), Toast.LENGTH_LONG).show();
 			return false;
 		} finally {
 		    try {
@@ -669,8 +697,7 @@ public class ViewCanvas extends View
 		            in.close();
 		        }
 		    } catch (IOException e) {
-				Log.d("", "ERROR "+e);
-		        e.printStackTrace();
+				Toast.makeText(mContext, e.toString(), Toast.LENGTH_LONG).show();
 				return false;
 		    }
 		}	
