@@ -20,30 +20,28 @@ import java.util.*;
 
 public class ViewCanvas extends View
 {
-	/*
-	class Point{
-		int mX;
-		int mY;
-		Point(int x, int y){
-			mX = x;
-			mY = y;
-		}
-	}
-	*/
+
 	class Cell
 	{
 		int color;
-		byte alpha;
+		int alpha;
 		Pixel pixel = null;
 		int height;
 		boolean painted = false;
 	}
 	
 	Cell cells[][] = null;
+	
+	private int CELLSIZE = 5;
+	private int cellsCountHor = 300;
+	private int cellsCountVert = 300;
 
+	private int mImageWidth = cellsCountHor * CELLSIZE;
+	private int mImageHeight = cellsCountVert * CELLSIZE;
+	
 	private int mBrushSize = 0; // 1 - 10
 
-	private byte[][] mBrushPoints = null;
+	private int[][] mBrushPoints = null;
 	//private int[][] mBrushPoints1 = null;
 	//private int[][] mBrushPoints2 = null;
 
@@ -58,10 +56,6 @@ public class ViewCanvas extends View
 
 	private int restOfColor; // 
 
-	int cellsCountHor;
-	int cellsCountVert;
-
-
 	private Brush mBrush;
 
 	int N = 0;
@@ -72,8 +66,6 @@ public class ViewCanvas extends View
 
 	int width;
 	int height;
-
-	int CELLSIZE = 5;
 
 	private int offsetX = 0;
 	private int offsetY = 0;
@@ -138,7 +130,7 @@ public class ViewCanvas extends View
 
 		ArrayList<Point> points = new ArrayList<Point>();
 		
-		mBrushPoints = new byte[mBrushSize2][mBrushSize2];
+		mBrushPoints = new int[mBrushSize2][mBrushSize2];
 		for (int i = 0; i < mBrushSize2; i++)
 			for (int j = 0; j < mBrushSize2; j++)
 			{
@@ -155,10 +147,10 @@ public class ViewCanvas extends View
 				if (distance > mBrushSize)
 					mBrushPoints[i][j] = 0;
 				else if (distance >= mBrushSize - (mBrushSize >> 2)) 
-					mBrushPoints[i][j] = (byte) (255 - 255 * distance / (mBrushSize << 1));
+					mBrushPoints[i][j] = (int) (255 - 255 * distance / (mBrushSize << 1));
 				else {
-					mBrushPoints[i][j] = (byte) (128 + (byte)(Math.random() * 128));
-					if (mBrushPoints[i][j] < 130)
+					mBrushPoints[i][j] = (int) (128 + (int)(Math.random() * 128));
+					if (mBrushPoints[i][j] < 140) //130
 						points.add(new Point(i,j));
 				}
 			}
@@ -182,13 +174,13 @@ public class ViewCanvas extends View
 	@Override 
 	protected void onDraw(Canvas canvas)
 	{
+		
 		canvas.drawColor(Color.BLACK);
 		if (bgBitmap != null)
 			canvas.drawBitmap(bgBitmap, rectBG, mRect, null);
+		
 		if (mBitmap != null)
-		{
 			canvas.drawBitmap(mBitmap, mRectBitmap, mRect, null);
-		}
 	}
 
 
@@ -200,30 +192,9 @@ public class ViewCanvas extends View
 		width = Math.max(wd, h);
 		height = Math.max(wd, h);
 
-		Log.d("cc", "size " + wd + " " + h);
-
-		
-		
-		load1("/screen.png");
-
 		if (offsetX > width) offsetX = 0;
 		if (offsetY > height) offsetY = 0;
 
-		mRect.set(0, 0, (int)(width * kZooming), (int)(height * kZooming));
-		mRect.offset(offsetX, offsetY);
-
-		for (int i = 0; i < cellsCountHor; i++){
-			for (int j = 0; j < cellsCountVert; j++){
-
-				mPaint.setColor(cells[i][j].color);
-				mPaint.setAlpha(cells[i][j].alpha);
-//Log.d("","mc "+mCanvas);
-				//Log.d("","CELLSIZE "+CELLSIZE);
-				//Log.d("","mPaint "+mPaint);
-				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
-								 + CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
-
-				}}
 		
 		//int i = prefs.getInt(PREFS_BRUSH_TRANSP, 100);
 		//int j = prefs.getInt(PREFS_BRUSH_SIZE, 1003);
@@ -315,7 +286,7 @@ public class ViewCanvas extends View
 				//{
 
 					t0 = event.getEventTime();
-					//setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
+					setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
 
 					N++;
 				//}
@@ -483,27 +454,6 @@ public class ViewCanvas extends View
 				if (i < 0 || j < 0 || i >= cellsCountHor || j >= cellsCountVert) 
 					continue;
 
-
-				// Create new Pixel in the current Cell
-				//cells[i][j].pixel = new Pixel(mPixel);
-				//cells[i][j].color = mColor;
-				//cells[i][j].painted = false;
-/*
-				// TO DO SOMETHING
-				if (cells[i][j].pixel == null)
-				{
-					cells[i][j].pixel = new Pixel(mPixel);
-					cells[i][j].color = mColor;
-				}
-				else if (cells[i][j].color == mColor)
-				{
-				}
-				else
-				{*/
-				
-					
-				//}
-
 				double inRads = Math.atan2(dy, dx);
 
 				if (inRads < 0)
@@ -539,9 +489,7 @@ public class ViewCanvas extends View
 				// Draw the cell
 				mPaint.setColor(cells[i][j].color);
 				mPaint.setAlpha(cells[i][j].alpha);
-//Log.d("","mc "+mCanvas);
-				//Log.d("","CELLSIZE "+CELLSIZE);
-				//Log.d("","mPaint "+mPaint);
+				
 				mCanvas.drawRect(i * CELLSIZE, j * CELLSIZE, i * CELLSIZE
 								 + CELLSIZE, j * CELLSIZE + CELLSIZE, mPaint);
 
@@ -564,10 +512,6 @@ public class ViewCanvas extends View
 
 	protected void onResume(SharedPreferences prefs)
 	{
-		Log.d("cc", "resume ");
-		
-		cellsCountHor = 300;
-		cellsCountVert = 300;
 
 		if (cells == null)
 		{
@@ -579,8 +523,13 @@ public class ViewCanvas extends View
 					cells[i][j].color = 0;
 				}	
 		}
+
+		load1(Utils.APP_FOLDER+"/screen.png");
 		
-		load(Utils.APP_FOLDER+"/screen");
+		mRect.set(0, 0, (int)(mImageWidth * kZooming), (int)(mImageHeight * kZooming));
+		mRect.offset(offsetX, offsetY);
+		
+		//load(Utils.APP_FOLDER+"/screen");
 	}
 
 	@Override protected void onDetachedFromWindow()
@@ -598,7 +547,7 @@ public class ViewCanvas extends View
 //		editor.putInt(PREFS_BRUSH_TRANSP, brush.getTransparency());
 //		editor.putInt(PREFS_BRUSH_SIZE, brush.getSize0());
 		
-		save(Utils.APP_FOLDER+"/screen");
+		save(Utils.APP_FOLDER+"/screen.png");
 	}
 
 	private boolean save(String fileName) {
@@ -607,8 +556,15 @@ public class ViewCanvas extends View
 		Log.d("","SAVE ...");
 		
 		try {
+			if (mBitmap == null)
+				return true;
+			
 		    out = new FileOutputStream(fileName);
-
+		    mBitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+			
+		    out.flush();
+	        out.close();
+	         
 		    String fileName1 = fileName.replaceFirst("[.][^.]+$", "")+".plt";
 		    
 			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName1));
@@ -675,10 +631,13 @@ public class ViewCanvas extends View
 					if (bis.available() <= 0) break;
 		            byte b5 = (byte)bis.read();
 		            
-					cells[i][j].alpha = b1;
-					cells[i][j].pixel = new Pixel(b2, b3, b4, b5);
-					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel); 
+//					cells[i][j].alpha = b1;
+//					cells[i][j].pixel = new Pixel(b2, b3, b4, b5);
+//					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel); 
 					
+					cells[i][j].alpha = 0;
+					cells[i][j].pixel = new Pixel();
+					cells[i][j].color = -1; 
 					
 					
 				
@@ -709,24 +668,26 @@ public class ViewCanvas extends View
 		Bitmap newBitmap;
 
 		File file = new File(fileName);
+		
 		if (file.exists())
 		{                          
 			Bitmap b = BitmapFactory.decodeFile(fileName);
 			try
 			{
 				newBitmap = b.copy(Bitmap.Config.ARGB_8888, true);
-				width = newBitmap.getWidth(); 
-				height = newBitmap.getHeight(); 
+				//width = newBitmap.getWidth(); 
+				//height = newBitmap.getHeight(); 
 			}
 			catch (Exception e)
 			{
-				newBitmap = Bitmap.createBitmap(width, height,
+				newBitmap = Bitmap.createBitmap(mImageWidth, mImageHeight,
 												Bitmap.Config.ARGB_8888);
 			};
 		}
 		else
-			newBitmap = Bitmap.createBitmap(width, height,
-											Bitmap.Config.ARGB_8888);
+			
+		newBitmap = Bitmap.createBitmap(mImageWidth, mImageHeight,
+										Bitmap.Config.ARGB_8888);
 
 		Canvas newCanvas = new Canvas();
 		newCanvas.setBitmap(newBitmap);
@@ -737,7 +698,7 @@ public class ViewCanvas extends View
 
 		mBitmap = newBitmap;
 		mCanvas = newCanvas;
-		mRectBitmap = new Rect(0, 0, width, height);
+		mRectBitmap = new Rect(0, 0, mImageWidth, mImageHeight);
 
 		invalidate();
 
@@ -745,10 +706,19 @@ public class ViewCanvas extends View
 
 	public void clear()
 	{
-		mBitmap.eraseColor(Color.TRANSPARENT);
+		//mBitmap.eraseColor(Color.TRANSPARENT);
+		mBitmap = Bitmap.createBitmap(mImageWidth, mImageHeight,
+				Bitmap.Config.ARGB_8888);
+		mCanvas.setBitmap(mBitmap);
+		
 		for (int i = 0; i < cellsCountHor; i++)
-			for (int j = 0; j < cellsCountVert; j++)
+			for (int j = 0; j < cellsCountVert; j++){
 				cells[i][j] = new Cell();
+				cells[i][j].pixel = new Pixel();
+				cells[i][j].color = 0;
+			}
+		
+		invalidate();
 
 	}
 
