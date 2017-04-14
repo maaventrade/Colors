@@ -53,6 +53,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private LinearLayout submenuSizes = null;
 	
 	private Tool optionsSubmenu;
+	private Tool arrow;
 	
 	// Temporary Utilsiables to create interface
 	private Tube tube;
@@ -227,6 +228,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		tube.setBrush(viewCanvas);
 		menu.addView(tube);
 
+		arrow = new Tool(this);
+		arrow.setMode(2, BitmapFactory.decodeResource(getResources(), R.drawable.arrow));
+		arrow.setOnClickListener(this);
+		menu.addView(arrow);
 	
 		if (!ViewConfiguration.get(this).hasPermanentMenuKey()){
 			optionsSubmenu = new Tool(this);
