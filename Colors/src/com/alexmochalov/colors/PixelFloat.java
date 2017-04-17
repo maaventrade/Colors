@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class PixelFloat {
 	// percent of red
-	float red;
+	public float red;
 	// percent of yellow
-	float yellow;
+	public float yellow;
 	// percent of blue
-	float blue;
-	float white;
+	public float blue;
+	public float white;
 	// red + yellow + blue + white = 100 
 	boolean modified = false;
 	

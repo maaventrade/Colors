@@ -2,16 +2,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mochalov.alex.oil.MainActivity" >
 
-	<item
+    <item
         android:id="@+id/action_clear"
-        android:orderInCategory="40"
+        android:orderInCategory="102"
         android:showAsAction="never"
-        android:title="Clear"/>
-			
+        android:title="@string/action_clear_canvas_color"/>
+   
+	<item
+        android:id="@+id/action_select_canvas"
+        android:orderInCategory="103"
+        android:showAsAction="never"
+        android:title="@string/action_select_canvas"/>
+    
+    <item
+        android:id="@+id/action_colors"
+        android:orderInCategory="105"
+        android:showAsAction="never"
+        android:title="@string/action_colors"/>
+    
+	<item
+        android:id="@+id/action_load"
+        android:orderInCategory="110"
+        android:showAsAction="never"
+        android:title="@string/action_load"/>
+		
+	<item
+        android:id="@+id/action_save"
+        android:orderInCategory="125"
+        android:showAsAction="never"
+        android:title="@string/action_save"/>
+		
+	<item
+        android:id="@+id/action_save_with"
+        android:orderInCategory="127"
+        android:showAsAction="never"
+        android:title="@string/action_save_with"/>
+
+	<item
+        android:id="@+id/action_file_information"
+        android:orderInCategory="150"
+        android:showAsAction="never"
+        android:title="@string/action_file_information"/>
+	
+	<item
+        android:id="@+id/action_information"
+        android:orderInCategory="200"
+        android:showAsAction="never"
+        android:title="@string/action_information"/>
+	
+					
 	<item
         android:id="@+id/action_exit"
         android:orderInCategory="300"
         android:showAsAction="never"
-        android:title="exit"/>
+        android:title="@string/action_exit"/>
 			
 </menu>

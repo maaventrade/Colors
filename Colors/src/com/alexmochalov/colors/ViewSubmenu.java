@@ -196,6 +196,10 @@ public class ViewSubmenu extends View{
 	public void initValues(Context context) {
 		mContext = context;
 		brushes = new ArrayList <Brush>();
+	}
+
+	public void selectBrush(Brush brush) {
+		brushes.get(0).copy(brush);
 	}	
 	
 }

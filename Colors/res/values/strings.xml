@@ -1,8 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">draw</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
+    <string name="app_name">RYB Painter</string>
+    
+    <string name="action_clear_canvas_color">Clear canvas</string>
+	<string name="action_select_canvas">Select canvas</string>
+	<string name="action_load">Load/New</string>
+	<string name="action_save_as">Save</string>
+	<string name="action_save_with">Save with canvas/Send by EMail</string>
+	<string name="action_save">Save</string>
+	<string name="action_file_information">File information</string>
+		<string name="action_information">Help</string>
+	<string name="action_settings">Settings</string>
+		<string name="action_exit">Exit</string>
+	<string name="action_record">Record</string>
+	<string name="action_colors">Colors</string>
+		
+	<string name="ok">Ok</string>
+		
+    <string name="SetToBrush">Set to brush</string>
+    <string name="red">Red:</string>
+    <string name="yellow">Yellow:</string>
+    <string name="blue">Blue:</string>
+    <string name="white">White:</string>
+    
+    <string name="select_canvas">Select canvas</string>
+    <string name="new_file">New file</string>
+	
+    <string name="english_red">English red</string>
+    <string name="cadmium_red">Cadmium red</string>
+    <string name="cinnobar">Cinnabar</string>
+    <string name="madder_red">Madder red</string>
+    <string name="naples_body">Naples body</string>
+    <string name="naples_yellow">Naples yellow</string>
+    <string name="cadmium_orange">Cadmium orange</string>
+    <string name="cadmium_yellow">Cadmium yellow</string>
+    <string name="cadmium_lemon">Cadmium lemon</string>
+    <string name="ocher">Ocher</string>
+    <string name="english_green">English green</string>
+    <string name="grass_grin">Grass green</string>
+    <string name="olive">Olive</string>
+    <string name="cerulium">Сerulium</string>
+    
+    <string name="olympic_green">Olympic green</string>
+    <string name="aquamarine">Aquamarine</string>
+    <string name="ultramarine">Ultramarine</string>
+    <string name="cobalt_blue">Cobalt blue</string>
+    <string name="cobalt_violet">Cobalt violet</string>
+    <string name="raw_sienna">Raw sienna</string>
+    <string name="open">Open</string>
+    <string name="new_image">New</string>
+    <string name="selectimage">Select image</string>
+    
+    <string name="size_warning1">The minimum width(height) of the image is: </string>
+    <string name="size_warning2">The maximum width(height) of the image is: </string>
+    		
+	
 </resources>

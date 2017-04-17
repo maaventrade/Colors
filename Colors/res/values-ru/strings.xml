@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RYB Painter</string>
+    
+    <string name="action_clear_canvas_color">Очистить холст</string>
+	<string name="action_select_canvas">Выбрать цвет холста</string>
+	<string name="action_load">Загрузить/Создать</string>
+	<string name="action_save_as">Сохранить</string>
+	<string name="action_save_with">Сохранить с холстом/Отправить по EMail</string>
+	<string name="action_save">Сохранить</string>
+	<string name="action_file_information">Информация о файле</string>
+	<string name="action_information">Справка</string>
+		<string name="action_settings">Настройки</string>
+		<string name="action_exit">Выход</string>
+	<string name="action_record">Запись</string>
+	<string name="action_colors">Цвета</string>
+		
+	<string name="ok">Ok</string>
+		
+    <string name="SetToBrush">Установить цвет кисти</string>
+    <string name="red">Красный:</string>
+    <string name="yellow">Желтый:</string>
+    <string name="blue">Синий:</string>
+    <string name="white">Белый:</string>
+    
+    <string name="select_canvas">Выбор холста</string>
+    
+    <string name="english_red">Английская красная</string>
+    <string name="cadmium_red">Кадмий красный</string>
+    <string name="cinnobar">Киноварь</string>
+    <string name="madder_red">Краплак красный</string>
+    <string name="naples_body">Неаполитанская телесная</string>
+    <string name="naples_yellow">Неаполитанская желтая</string>
+    <string name="cadmium_orange">Кадмий оранжевый</string>
+    <string name="cadmium_yellow">Кадмий желтый</string>
+    <string name="cadmium_lemon">Кадмий лимонный</string>
+    <string name="ocher">Охра</string>
+    <string name="english_green">Английская зеленая</string>
+    <string name="grass_grin">Травяная зеленая</string>
+    <string name="olive">Оливковый</string>
+    <string name="cerulium">Церулеум</string>
+    
+    <string name="olympic_green">Изумрудная зеленая</string>
+    <string name="aquamarine">Аквамарин</string>
+    <string name="ultramarine">Ультрамарин</string>
+    <string name="cobalt_blue">Кобальт синий</string>
+    <string name="cobalt_violet">Кобальт фиолетовый</string>
+    <string name="raw_sienna">Сиена натуральная</string>
+    <string name="open">Открыть</string>
+    <string name="new_image">Добавить</string>
+    <string name="selectimage">Выбрать изображение</string>
+    
+    <string name="size_warning1">Минимальный размер стороны изображения: </string>
+    <string name="size_warning2">Максимальный размер стороны изображения: </string>
+    		
+	
+</resources>

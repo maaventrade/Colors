@@ -1,5 +1,6 @@
 package com.alexmochalov.colors;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences.Editor;
 import android.content.*;
 import android.graphics.*;
@@ -18,9 +19,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import com.example.draw.R;
+
 public class ViewCanvas extends View
 {
 
+	private String mFileName = "new";
+	
+	private enum Mode {move, paint};
+	private Mode mode = Mode.paint;
+	
 	class Cell
 	{
 		int color;
@@ -279,23 +287,25 @@ public class ViewCanvas extends View
 		switch (action)
 		{
 			case MotionEvent.ACTION_DOWN:
-				if (callback != null)
-					callback.callbackACTION_DOWN(mBrush);
+				if (mode == Mode.paint){
+					if (callback != null)
+						callback.callbackACTION_DOWN(mBrush);
 
-				//if (restOfColor > 0)
-				//{
+					//if (restOfColor > 0)
+					//{
 
-					t0 = event.getEventTime();
-					setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
+						t0 = event.getEventTime();
+						setCells((x-offsetX)/kZooming, (y-offsetY)/kZooming, 0, 0, 0);
 
-					N++;
-				//}
-				//else 
-				//getColorFromTheCanvas(x, y);
+						N++;
+					//}
+					//else 
+					//getColorFromTheCanvas(x, y);
 
+				}
 				break;
 			case MotionEvent.ACTION_MOVE:
-				if (event.getPointerCount() == 1){
+				if (mode == Mode.paint){
 					// If we have color in the brush
 					if (restOfColor > 0)
 					{
@@ -346,12 +356,13 @@ public class ViewCanvas extends View
 						getColorFromTheCanvas(x, y);
 					
 				} else {
-					// Two fingers
-
 					PointerCoords coord0 = new PointerCoords();
 					PointerCoords coord1 = new PointerCoords();
+					
 					event.getPointerCoords(0, coord0);
-					event.getPointerCoords(1, coord1);
+					if (event.getPointerCount() > 1)
+						event.getPointerCoords(1, coord1);
+					else coord1.copyFrom(coord0);
 
 					double distance1 = distance(coord0, coord1)/10;
 
@@ -380,10 +391,10 @@ public class ViewCanvas extends View
 					offsetX = offsetX + (x - x0);
 					offsetY = offsetY + (y - y0);
 
-					offsetX = offsetX + (int)((-width*kZooming + width*k1)/2);
-					offsetY = offsetY + (int)((-height*kZooming + height*k1)/2);
+					offsetX = offsetX + (int)((-mImageWidth*kZooming + mImageWidth*k1)/2);
+					offsetY = offsetY + (int)((-mImageHeight*kZooming + mImageHeight*k1)/2);
 
-					mRect.set(0, 0, (int)(width * kZooming), (int)(height * kZooming));
+					mRect.set(0, 0, (int)(mImageWidth * kZooming), (int)(mImageHeight * kZooming));
 					mRect.offset(offsetX, offsetY);
 
 					center0.x = center1.x;
@@ -394,11 +405,13 @@ public class ViewCanvas extends View
 					x0 = x;
 					y0 = y;
 					//return true;
-					
 				}
-			
+					
 				break;
 			case MotionEvent.ACTION_POINTER_UP:
+				if (mode == Mode.paint){
+					
+				} else {
 				PointerCoords coord0 = new PointerCoords();
 				event.getPointerCoords(0, coord0);
 				x0 = -1;//(int) coord0.x;
@@ -406,15 +419,16 @@ public class ViewCanvas extends View
 				resize = false;
 				pointerUp = true;
 				distance = 0;
+				}
 				return true;
 			case MotionEvent.ACTION_UP:
-
-				fillBrush();
-
-				t0 = event.getEventTime();
-				x0 = -1;
-				y0 = -1;
-				invalidate();
+				if (mode == Mode.paint){
+					fillBrush();
+					t0 = event.getEventTime();
+					x0 = -1;
+					y0 = -1;
+					invalidate();
+				}
 				return true;
 		}
 		t0 = event.getEventTime();
@@ -529,7 +543,7 @@ public class ViewCanvas extends View
 		mRect.set(0, 0, (int)(mImageWidth * kZooming), (int)(mImageHeight * kZooming));
 		mRect.offset(offsetX, offsetY);
 		
-		//load(Utils.APP_FOLDER+"/screen");
+		load(Utils.APP_FOLDER+"/screen");
 	}
 
 	@Override protected void onDetachedFromWindow()
@@ -548,6 +562,11 @@ public class ViewCanvas extends View
 //		editor.putInt(PREFS_BRUSH_SIZE, brush.getSize0());
 		
 		save(Utils.APP_FOLDER+"/screen.png");
+	}
+
+	public void save() {
+		if (save(Utils.APP_FOLDER+"/"+mFileName+".png"))
+			Toast.makeText(mContext, "Fiale saved "+Utils.APP_FOLDER+"/"+mFileName+".png", Toast.LENGTH_LONG).show();
 	}
 
 	private boolean save(String fileName) {
@@ -580,9 +599,10 @@ public class ViewCanvas extends View
 			
 			bos.flush();
 			bos.close();
+			
 			Log.d("","SAVED.");
 		} catch (Exception e) {
-			Log.d("", "ERROR "+e);
+			Toast.makeText(mContext, "Error "+e.toString(), Toast.LENGTH_LONG).show();
 		    e.printStackTrace();
 			return false;
 		} finally {
@@ -591,7 +611,7 @@ public class ViewCanvas extends View
 		            out.close();
 		        }
 		    } catch (IOException e) {
-				Log.d("", "ERROR "+e);
+				Toast.makeText(mContext, "Error "+e.toString(), Toast.LENGTH_LONG).show();
 		        e.printStackTrace();
 				return false;
 		    }
@@ -600,72 +620,88 @@ public class ViewCanvas extends View
 	}
 	
 	
+	private String result;
 
-	private boolean load(String fileName) {
-		FileInputStream in = null;
+	boolean load(final String fileName) {
 		
-		Log.d("cc","LOAD ..."+cellsCountHor+" "+cellsCountVert);
+		result = "";
+		final ProgressDialog mDialog = new ProgressDialog(mContext);
+
+		mDialog.setMessage("Loading..."); //getResources().getString(R.string.executing_task)
+        mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mDialog.setProgress(0);
+        mDialog.setMax(cellsCountHor);
+        mDialog.show();		
 		
-		try {
-		    in = new FileInputStream(fileName);
+        new Thread(new Runnable() {
+            @Override
+            public void run(){
+        		FileInputStream in = null;
+                
+        		try {
+        		    in = new FileInputStream(fileName);
 
-		    String fileName1 = fileName.replaceFirst("[.][^.]+$", "")+".plt";
-		    
-			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName1));
-			int n = 0;
-			for (int i = 0; i < cellsCountHor; i++){
-				for (int j = 0; j < cellsCountVert; j++){
+        		    String fileName1 = fileName.replaceFirst("[.][^.]+$", "")+".plt";
+        		    
+        			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName1));
+        			int n = 0;
+        			for (int i = 0; i < cellsCountHor; i++){
+        				mDialog.setProgress(i);
+        				for (int j = 0; j < cellsCountVert; j++){
 
-					if (bis.available() <= 0) break;
-		            byte b1 = (byte)bis.read();
-		            
-					if (bis.available() <= 0) break;
-		            byte b2 = (byte)bis.read();
-		            
-					if (bis.available() <= 0) break;
-		            byte b3 = (byte)bis.read();
-		            
-					if (bis.available() <= 0) break;
-		            byte b4 = (byte)bis.read();
-		            
-					if (bis.available() <= 0) break;
-		            byte b5 = (byte)bis.read();
-		            
-//					cells[i][j].alpha = b1;
-//					cells[i][j].pixel = new Pixel(b2, b3, b4, b5);
-//					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel); 
-					
-					cells[i][j].alpha = 0;
-					cells[i][j].pixel = new Pixel();
-					cells[i][j].color = -1; 
-					
-					
-				
-				}	
-				if (bis.available() <= 0) break;
-			}
-			
-			bis.close();
-			Log.d("","LOADED.");
-		} catch (Exception e) {
-			Toast.makeText(mContext, e.toString(), Toast.LENGTH_LONG).show();
-			return false;
-		} finally {
-		    try {
-		        if (in != null) {
-		            in.close();
-		        }
-		    } catch (IOException e) {
-				Toast.makeText(mContext, e.toString(), Toast.LENGTH_LONG).show();
-				return false;
-		    }
-		}	
-		return true;
+        					if (bis.available() <= 0) break;
+        		            byte b1 = (byte)bis.read();
+        		            
+        					if (bis.available() <= 0) break;
+        		            byte b2 = (byte)bis.read();
+        		            
+        					if (bis.available() <= 0) break;
+        		            byte b3 = (byte)bis.read();
+        		            
+        					if (bis.available() <= 0) break;
+        		            byte b4 = (byte)bis.read();
+        		            
+        					if (bis.available() <= 0) break;
+        		            byte b5 = (byte)bis.read();
+        		            
+        					cells[i][j].alpha = b1;
+        					cells[i][j].pixel = new Pixel(b2, b3, b4, b5);
+        					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel); 
+        					
+        				}	
+        				if (bis.available() <= 0) break;
+        			}
+        			
+        			bis.close();
+        			Log.d("","LOADED.");
+        		} catch (Exception e) {
+        			result = e.toString();
+        		} finally {
+        		    try {
+        		        if (in != null) {
+        		            in.close();
+        		        }
+        		    } catch (IOException e) {
+            			result = e.toString();
+        		    }
+        		}	
+                mDialog.dismiss();
+            }
+        }).start();
+        
+        if (result.equals(""))
+        	return true;
+        else {
+            Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
+    		return false;
+        }
 	}
 	
 	public void load1(String fileName)
 	{
 		Bitmap newBitmap;
+		
+//		mFileName = fileName;
 
 		File file = new File(fileName);
 		
@@ -745,4 +781,50 @@ public class ViewCanvas extends View
 	public float getBrushSize() {
 		return mBrushSize;
 	}
+	
+	public void setMode(boolean isPaint){
+		if (isPaint)
+			mode = Mode.paint;
+		else
+			mode = Mode.move;
+		
+	}
+	
+	public void changeMode(){
+		if (mode == Mode.paint)
+			mode = Mode.move;
+		else
+			mode = Mode.paint;
+		
+	}
+
+	public Bitmap getIcon() {
+		if (mode == Mode.paint)
+			return BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
+		else
+			return BitmapFactory.decodeResource(getResources(), R.drawable.arrow1);
+	}
+
+	public void setFileName(String fileName) {
+	    mFileName = fileName.replaceFirst("[.][^.]+$", "");
+	}
+
+	public String getFilename() {
+		return mFileName;
+	}
+
+	public int getImageWidth() {
+		return mImageWidth;
+	}
+
+	public int getImageHeight() {
+		return mImageHeight;
+	}
+
+	public void setPixel(PixelFloat pixel) {
+		mBrush.setPixel(pixel);
+		
+	}
+	
 }
+
