@@ -25,6 +25,11 @@ public class ViewCanvas extends View
 {
 
 	private String mFileName = "new";
+
+	public void setBrushDarker()
+	{
+		mBrush.setDarker();
+	}
 	
 	private enum Mode {move, paint};
 	private Mode mode = Mode.paint;

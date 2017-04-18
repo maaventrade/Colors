@@ -56,6 +56,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	private Tool optionsSubmenu;
 	private Tool arrow;
+	private Tool colorBlack;
 
 	// Temporary Utilsiables to create interface
 	private Tube tube;
@@ -70,6 +71,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	SharedPreferences prefs;
 
 	private final int action_mode = 1101;
+	private final int action_black = 1102;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -228,7 +230,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		tube.setColor(hexToRYB(ContextCompat.getColor(this, R.color.ryb_white)));
 		tube.setBrush(viewCanvas);
 		menu.addView(tube);
-
+		
+		colorBlack = new Tool(this);
+		colorBlack.setMode(action_black,
+					  BitmapFactory.decodeResource(getResources(), R.drawable.erase));
+		colorBlack.setOnClickListener(this);
+		menu.addView(colorBlack);
+		
 		arrow = new Tool(this);
 		arrow.setMode(action_mode,
 				BitmapFactory.decodeResource(getResources(), R.drawable.arrow));
@@ -534,6 +542,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		} else if (tool.getCode() == action_mode) {
 			viewCanvas.changeMode();
 			tool.setIcon(viewCanvas.getIcon());
+		} else if (tool.getCode() == action_black) {
+			viewCanvas.setBrushDarker();
 		}
 
 		submenu.setVisibility(View.INVISIBLE);

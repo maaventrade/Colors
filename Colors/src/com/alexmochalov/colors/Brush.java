@@ -53,6 +53,16 @@ public class Brush extends ImageView{
 		init(context);
 	}
 
+	public void setDarker()
+	{
+		mPixel.red = 0;
+		mPixel.blue = 0;
+		mPixel.yellow = 0;
+		mPixel.white = 0;
+		rgb = Utils.ryb2rgb(mPixel);
+		invalidate();
+	}
+
 	public void setMode(Mode mode, Bitmap icon)
 	{
 		setMode(mode);
