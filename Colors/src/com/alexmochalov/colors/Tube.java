@@ -8,7 +8,7 @@ import android.widget.*;
 
 public class Tube extends ImageView{
 
-	private Pixel pixel;
+	private PixelFloat PixelFloat;
 	private Paint paint;
 	private ViewCanvas mViewCanvas;
 	
@@ -43,7 +43,7 @@ public class Tube extends ImageView{
 
 	public void setColor(short r, short y, short b, short w)
 	{
-		pixel = new Pixel(r, y, b, w); 
+		PixelFloat = new PixelFloat(r, y, b, w); 
 	}
 
 
@@ -62,7 +62,7 @@ public class Tube extends ImageView{
     }
 
 	public void setColor(short[] rgb2ryb) {
-    	this.pixel = new Pixel((short)255, rgb2ryb);
+    	this.PixelFloat = new PixelFloat((short)255, rgb2ryb);
     	invalidate();
 	}
     
@@ -70,7 +70,7 @@ public class Tube extends ImageView{
     protected void onDraw(Canvas canvas) {
     	Utils.drawBG(canvas);
     
-        paint.setColor(Utils.ryb2rgb(pixel));
+        paint.setColor(Utils.ryb2rgb(PixelFloat));
         canvas.translate(Utils.brushWidth, Utils.brushWidth);
         canvas.drawCircle(0, 0, Utils.brushRadius, paint);
 
@@ -83,10 +83,10 @@ public class Tube extends ImageView{
 
         switch (event.getAction()) {
         	case MotionEvent.ACTION_DOWN:
-        		mViewCanvas.addColor(pixel);
+        		mViewCanvas.addColor(PixelFloat);
         		return true;
         	case MotionEvent.ACTION_MOVE:
-        		mViewCanvas.addColor(pixel);
+        		mViewCanvas.addColor(PixelFloat);
         		return true;
             default:
             	return true;

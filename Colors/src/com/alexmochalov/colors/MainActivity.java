@@ -44,7 +44,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private Brush mixes[] = new Brush[MIXES_COUNT];
 
 	private RelativeLayout root = null;
-	private LinearLayout menu = null;
+	//private LinearLayout menu = null;
 	private LinearLayout submenu = null;
 
 	private ViewSubmenu viewSubmenu;
@@ -169,7 +169,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	@SuppressLint("NewApi")
 	private void createMenu() {
 		root = (RelativeLayout) findViewById(R.id.root);
-		menu = (LinearLayout) findViewById(R.id.menu);
+		
+		LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
 		submenu = (LinearLayout) findViewById(R.id.submenu);
 		submenu.setVisibility(View.INVISIBLE);
 
@@ -180,13 +181,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		submenu2 = (LinearLayout) findViewById(R.id.submenu2);
 		// read();
 
-		final Brush brush = viewCanvas.getBrush();
+		Brush brush = viewCanvas.getBrush();
 
 		menu.addView(brush);
+		
 		brush.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d("", brush.pixelToString());
 				if (!submenuVisible)
 					submenu.setVisibility(View.VISIBLE);
 				else
@@ -231,11 +232,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		tube.setBrush(viewCanvas);
 		menu.addView(tube);
 		
+		/*
 		colorBlack = new Tool(this);
 		colorBlack.setMode(action_black,
 					  BitmapFactory.decodeResource(getResources(), R.drawable.erase));
 		colorBlack.setOnClickListener(this);
 		menu.addView(colorBlack);
+		*/
 		
 		arrow = new Tool(this);
 		arrow.setMode(action_mode,
@@ -311,6 +314,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		toolOpaque2.setOnClickListener(this);
 		submenu3.addView(toolOpaque2);
 
+		/*
 		final Tool toolOpaque3 = new Tool(this);
 		toolOpaque3.setMode(10, null);
 		toolOpaque3.setOnClickListener(new OnClickListener() {
@@ -322,12 +326,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			}
 		});
 		submenu3.addView(toolOpaque3);
+		*/
 
 		toolOpaque1.setVisibility(View.INVISIBLE);
 		toolOpaque2.setVisibility(View.INVISIBLE);
-		toolOpaque3.setVisibility(View.INVISIBLE);
+		//toolOpaque3.setVisibility(View.INVISIBLE);
 		toolOpaque4.setVisibility(View.INVISIBLE);
-
+/*
 		toolOpaque.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -346,7 +351,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			}
 
 		});
-
+*/
 		/*
 		 * //-------------- SUBMENU size ----------------------- submenuSizes =
 		 * new LinearLayout(this);

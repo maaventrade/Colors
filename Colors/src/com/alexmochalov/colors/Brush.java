@@ -83,9 +83,9 @@ public class Brush extends ImageView{
 		invalidate();
 	} 
 
-	public Pixel getPixel()
+	public PixelFloat getPixel()
 	{
-		Pixel p = new Pixel((short)mPixel.red, (short)mPixel.yellow, (short)mPixel.blue, (short)mPixel.white);
+		PixelFloat p = new PixelFloat((short)mPixel.red, (short)mPixel.yellow, (short)mPixel.blue, (short)mPixel.white);
 		return p;
 	}
 
@@ -106,7 +106,7 @@ public class Brush extends ImageView{
 		this.radius = radius;
 		this.rgb = Color.WHITE;
 		
-		mPixel = new  PixelFloat((short)255);
+		mPixel = new  PixelFloat();
 		
 		mask = Bitmap.createBitmap(radius * 2, radius * 2, 
 				Bitmap.Config.ARGB_8888); 
@@ -156,9 +156,9 @@ public class Brush extends ImageView{
         rectD = new Rect(0,0,Utils.brushWidth*2,Utils.brushWidth*2);
     }
 	
-	public void addColor(Pixel pixel){
+	public void addColor(PixelFloat pixelFloat){
 		mode = Mode.paint;
-		mPixel.add1(pixel, false);
+		mPixel.add1(pixelFloat, false);
 		rgb = Utils.ryb2rgb(mPixel);
 		invalidate();
 	}
@@ -269,8 +269,8 @@ public class Brush extends ImageView{
 		rgb = Utils.ryb2rgb(mPixel);
 	}
 
-	public void setColor(Pixel pixel) {
-		mPixel = new PixelFloat(pixel);
+	public void setColor(PixelFloat pixelFloat) {
+		mPixel = new PixelFloat();
 		rgb = Utils.ryb2rgb(mPixel);
 	}
 }

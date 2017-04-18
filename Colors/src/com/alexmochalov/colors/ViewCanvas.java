@@ -38,7 +38,7 @@ public class ViewCanvas extends View
 	{
 		int color;
 		int alpha;
-		Pixel pixel = null;
+		PixelFloat PixelFloat = null;
 		int height;
 		boolean painted = false;
 	}
@@ -60,10 +60,10 @@ public class ViewCanvas extends View
 
 	private int mColor = 0; 
 	private int mAlpha = 0;
-	private Pixel mPixel = null;
+	private PixelFloat mPixel = null;
 
-	private Pixel sunny = new Pixel(0, 0, 0, 100);
-	private Pixel shadow = new Pixel(25, 25, 50, 0);
+	private PixelFloat sunny = new PixelFloat(0, 0, 0, 100);
+	private PixelFloat shadow = new PixelFloat(25, 25, 50, 0);
 
 	int NNN = 0;
 
@@ -226,9 +226,9 @@ public class ViewCanvas extends View
 	private boolean resize = false;
 	private boolean pointerUp = false;
 
-	public void setColor(Pixel pixel)
+	public void setColor(PixelFloat PixelFloat)
 	{
-		mPixel = pixel;
+		mPixel = PixelFloat;
 		mColor = Utils.ryb2rgb(mPixel);
 		mAlpha = 255;
 
@@ -247,7 +247,7 @@ public class ViewCanvas extends View
 	{
 		int nX = x / CELLSIZE;
 		int nY = y / CELLSIZE;
-		mPixel = cells[nX][nY].pixel;
+		mPixel = cells[nX][nY].PixelFloat;
 		if (mPixel != null && mColor != -1 && restOfColor == 0)
 		{
 			mColor = Utils.ryb2rgb(mPixel);
@@ -487,8 +487,8 @@ public class ViewCanvas extends View
 				int y12 = (int) ((x11 - size) * Math.sin(inRads) + (y11 - size) * Math.cos(inRads)) + size;
 
 				//try{
-					cells[i][j].pixel.add(mPixel, true); 
-					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel);
+					cells[i][j].PixelFloat.add(mPixel, true); 
+					cells[i][j].color = Utils.ryb2rgb(cells[i][j].PixelFloat);
 					
 				if (x12 >= 0 && x12 < mBrushSize2 && y12 >= 0 && y12 < mBrushSize2)
 						cells[i][j].alpha = mBrushPoints[x12][y12];
@@ -538,7 +538,7 @@ public class ViewCanvas extends View
 			for (int i = 0; i < cellsCountHor; i++)
 				for (int j = 0; j < cellsCountVert; j++){
 					cells[i][j] = new Cell();
-					cells[i][j].pixel = new Pixel();
+					cells[i][j].PixelFloat = new PixelFloat();
 					cells[i][j].color = 0;
 				}	
 		}
@@ -566,6 +566,7 @@ public class ViewCanvas extends View
 //		editor.putInt(PREFS_BRUSH_TRANSP, brush.getTransparency());
 //		editor.putInt(PREFS_BRUSH_SIZE, brush.getSize0());
 		
+		mBrush = null;
 		save(Utils.APP_FOLDER+"/screen.png");
 	}
 
@@ -595,11 +596,11 @@ public class ViewCanvas extends View
 			
 			for (int i = 0; i < cellsCountHor; i++)
 				for (int j = 0; j < cellsCountVert; j++){
-					bos.write(cells[i][j].alpha);
-					bos.write(cells[i][j].pixel.red);
-					bos.write(cells[i][j].pixel.yellow);
-					bos.write(cells[i][j].pixel.blue);
-					bos.write(cells[i][j].pixel.white);
+				//	bos.write(cells[i][j].alpha);
+				//	bos.write(cells[i][j].pixel.red);
+				//	bos.write(cells[i][j].PixelFloat.yellow);
+				//	bos.write(cells[i][j].PixelFloat.blue);
+				//	bos.write(cells[i][j].PixelFloat.white);
 				}		
 			
 			bos.flush();
@@ -670,8 +671,8 @@ public class ViewCanvas extends View
         		            byte b5 = (byte)bis.read();
         		            
         					cells[i][j].alpha = b1;
-        					cells[i][j].pixel = new Pixel(b2, b3, b4, b5);
-        					cells[i][j].color = Utils.ryb2rgb(cells[i][j].pixel); 
+        					cells[i][j].PixelFloat = new PixelFloat(b2, b3, b4, b5);
+        					cells[i][j].color = Utils.ryb2rgb(cells[i][j].PixelFloat); 
         					
         				}	
         				if (bis.available() <= 0) break;
@@ -755,7 +756,7 @@ public class ViewCanvas extends View
 		for (int i = 0; i < cellsCountHor; i++)
 			for (int j = 0; j < cellsCountVert; j++){
 				cells[i][j] = new Cell();
-				cells[i][j].pixel = new Pixel();
+				cells[i][j].PixelFloat = new PixelFloat();
 				cells[i][j].color = 0;
 			}
 		
@@ -768,9 +769,9 @@ public class ViewCanvas extends View
 		return mBrush;
 	}
 
-	public void addColor(Pixel pixel)
+	public void addColor(PixelFloat PixelFloat)
 	{
-		mBrush.addColor(pixel);
+		mBrush.addColor(PixelFloat);
 		setColor(mBrush.getPixel());
 	}
 
@@ -826,8 +827,8 @@ public class ViewCanvas extends View
 		return mImageHeight;
 	}
 
-	public void setPixel(PixelFloat pixel) {
-		mBrush.setPixel(pixel);
+	public void setPixel(PixelFloat PixelFloat) {
+		mBrush.setPixel(PixelFloat);
 		
 	}
 	

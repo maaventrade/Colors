@@ -9,23 +9,30 @@ public class PixelFloat {
 	public float yellow;
 	// percent of blue
 	public float blue;
+	// percent of white
 	public float white;
-	// red + yellow + blue + white = 100 
+	// red + yellow + blue + white = 100
+	
+	// level of BLACK
+	public float black; // 1...10;  G,R,B divided to "black"  
+	
 	boolean modified = false;
 	
-	public PixelFloat(Pixel pixel){
+	public PixelFloat(){
 		this.red = 0;
 		this.yellow = 0;
 		this.blue = 0;
 		this.white = 0;
+		this.black = 1;
 	}
 
-	public void add(Pixel source)
+	public void add(PixelFloat source)
 	{
 		this.red = source.red;
 		this.yellow = source.yellow;
 		this.blue = source.blue;
 		this.white = source.white;
+		this.black = source.black;
 	}
 
 	public void setModified(boolean p0)
@@ -37,7 +44,8 @@ public class PixelFloat {
 		this.red = ryb[0];
 		this.yellow = ryb[1];
 		this.blue = ryb[2];
-		this.white = 0;
+		this.white = ryb[3];
+		this.black = 1;
 	}
 	
 	public PixelFloat(float r, float y, float b, float w) {
@@ -45,6 +53,7 @@ public class PixelFloat {
 		this.yellow = y;
 		this.blue = b;
 		this.white = w;
+		this.black = 1;
 	}
 	
 	public PixelFloat(float r, float y, float b) {
@@ -53,7 +62,9 @@ public class PixelFloat {
 		this.yellow = y*k;
 		this.blue = b*k;
 		this.white = 0;
+		this.black = 1;
 	}
+	
 	
 	public PixelFloat(float r, float y, float b, float w, boolean percent) {
 		float k = 100/(r+y+b);
@@ -61,6 +72,7 @@ public class PixelFloat {
 		this.yellow = y*k;
 		this.blue = b*k;
 		this.white = w;
+		this.black = 1;
 	}
 	
 	public PixelFloat(short r, short y, short b, short w) {
@@ -68,10 +80,7 @@ public class PixelFloat {
 		this.yellow = y;
 		this.blue = b;
 		this.white = w;
-	}
-
-	public PixelFloat(short s) {
-		// TODO Auto-generated constructor stub
+		this.black = 1;
 	}
 
 	public boolean isZero()
@@ -85,30 +94,32 @@ public class PixelFloat {
 		this.yellow = 0;
 		this.blue = 0;
 		this.white = 0;
+		this.black = 1;
 //		this.color = Utils.ryb2rgb(this);
 	}
 	
-	public void set(short t, PixelFloat pixel, boolean modified)
+	public void set(short t, PixelFloat PixelFloat, boolean modified)
 	{
-		if (pixel == null) return;
+		if (PixelFloat == null) return;
 
-		red = pixel.red;
-		yellow = pixel.yellow;
-		blue = pixel.blue;
-		white = pixel.white;
+		red = PixelFloat.red;
+		yellow = PixelFloat.yellow;
+		blue = PixelFloat.blue;
+		white = PixelFloat.white;
+		black = PixelFloat.black;
 		
 		this.modified = modified;
 	}
 	
-	public void add1(Pixel pixel, boolean modified)
+	public void add1(PixelFloat PixelFloat, boolean modified)
 	{
-		if (pixel == null) return;
+		if (PixelFloat == null) return;
 		this.modified = modified;
 		
-		float rr = 100/ Utils.mPercent * red + Utils.mPercentAdd/Utils.mPercent * pixel.red ;   
-		float yy = 100/ Utils.mPercent * yellow + Utils.mPercentAdd/Utils.mPercent * pixel.yellow ;   
-		float bb = 100/ Utils.mPercent * blue + Utils.mPercentAdd/Utils.mPercent * pixel.blue ; 
-		float ww = 100/ Utils.mPercent * white + Utils.mPercentAdd/Utils.mPercent * pixel.white ; 
+		float rr = 100/ Utils.mPercent * red + Utils.mPercentAdd/Utils.mPercent * PixelFloat.red ;   
+		float yy = 100/ Utils.mPercent * yellow + Utils.mPercentAdd/Utils.mPercent * PixelFloat.yellow ;   
+		float bb = 100/ Utils.mPercent * blue + Utils.mPercentAdd/Utils.mPercent * PixelFloat.blue ; 
+		float ww = 100/ Utils.mPercent * white + Utils.mPercentAdd/Utils.mPercent * PixelFloat.white ; 
 		
 		red = (rr / (rr + yy + bb + ww) * Utils.mPercent);
 		yellow = (yy / (rr + yy + bb + ww) * Utils.mPercent);
@@ -116,15 +127,15 @@ public class PixelFloat {
 		white = (ww / (rr + yy + bb + ww) * Utils.mPercent);
 	}
 	
-	public void add(PixelFloat pixel, boolean modified)
+	public void add(PixelFloat PixelFloat, boolean modified)
 	{
-		if (pixel == null) return;
+		if (PixelFloat == null) return;
 		this.modified = modified;
 		
-		float rr = 100/ Utils.mPercent * red + 50/Utils.mPercent * pixel.red ;   
-		float yy = 100/ Utils.mPercent * yellow + 50/Utils.mPercent * pixel.yellow ;   
-		float bb = 100/ Utils.mPercent * blue + 50/Utils.mPercent * pixel.blue ; 
-		float ww = 100/ Utils.mPercent * white + 50/Utils.mPercent * pixel.white ; 
+		float rr = 100/ Utils.mPercent * red + 50/Utils.mPercent * PixelFloat.red ;   
+		float yy = 100/ Utils.mPercent * yellow + 50/Utils.mPercent * PixelFloat.yellow ;   
+		float bb = 100/ Utils.mPercent * blue + 50/Utils.mPercent * PixelFloat.blue ; 
+		float ww = 100/ Utils.mPercent * white + 50/Utils.mPercent * PixelFloat.white ; 
 		
 		red = (rr / (rr + yy + bb + ww) * Utils.mPercent);
 		yellow = (yy / (rr + yy + bb + ww) * Utils.mPercent);
@@ -144,11 +155,12 @@ public class PixelFloat {
 		return ""+" red "+red+" yellow "+yellow+" blue "+blue+" white "+white;
 	}
 
-	public void copy(PixelFloat pixel) {
-		this.red = pixel.red;
-		this.yellow = pixel.yellow;
-		this.blue = pixel.blue;
-		this.white = pixel.white;
+	public void copy(PixelFloat PixelFloat) {
+		this.red = PixelFloat.red;
+		this.yellow = PixelFloat.yellow;
+		this.blue = PixelFloat.blue;
+		this.white = PixelFloat.white;
+		this.black = PixelFloat.black;
 		
 	}
 }

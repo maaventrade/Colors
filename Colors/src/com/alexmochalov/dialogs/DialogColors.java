@@ -28,11 +28,13 @@ public class DialogColors extends Dialog  implements OnSeekBarChangeListener {
 	private SeekBar sbYellow;
 	private SeekBar sbBlue;
 	private SeekBar sbWhite;
+	private SeekBar sbBlack;
 
 	private TextView textViewRed;
 	private TextView textViewYellow;
 	private TextView textViewBlue;
 	private TextView textViewWhite;
+	private TextView textViewBlack;
 	
 	//private CheckBox checkBoxAdd;
 	private boolean fromList = false;
@@ -74,14 +76,20 @@ public class DialogColors extends Dialog  implements OnSeekBarChangeListener {
 		sbBlue = (SeekBar)findViewById(R.id.seekBarBlue); 
 		sbBlue.setMax(100);
 		sbBlue.setOnSeekBarChangeListener(this);
+		
 		sbWhite = (SeekBar)findViewById(R.id.seekBarWhite); 
 		sbWhite.setMax(100);
 		sbWhite.setOnSeekBarChangeListener(this);
+		
+		sbBlack = (SeekBar)findViewById(R.id.seekBarBlack); 
+		sbBlack.setMax(100);
+		sbBlack.setOnSeekBarChangeListener(this);
 	
 		textViewRed = (TextView)findViewById(R.id.textViewRed); 
 		textViewYellow = (TextView)findViewById(R.id.textViewYellow); 
 		textViewBlue = (TextView)findViewById(R.id.textViewBlue); 
 		textViewWhite = (TextView)findViewById(R.id.textViewWhite); 
+		textViewBlack = (TextView)findViewById(R.id.textViewBlack); 
         
        //checkBoxAdd = (CheckBox)findViewById(R.id.colorsCheckBoxAdd);
 		
@@ -145,6 +153,7 @@ public class DialogColors extends Dialog  implements OnSeekBarChangeListener {
 					sbYellow.setProgress((int)p.yellow);
 					sbBlue.setProgress((int)p.blue);
 					sbWhite.setProgress((int)p.white);
+					sbBlack.setProgress((int)(p.black*10));
 					
 				}}
 			);
@@ -159,6 +168,8 @@ public class DialogColors extends Dialog  implements OnSeekBarChangeListener {
 			pixel.blue = sbBlue.getProgress();
 			
 			pixel.white = sbWhite.getProgress();
+			
+			pixel.black = (float)sbBlack.getProgress()/10+1;                                                                                                                                                                                                                                                                                             
 		}
 		
 		int color = Utils.ryb2rgb(pixel);
@@ -168,6 +179,7 @@ public class DialogColors extends Dialog  implements OnSeekBarChangeListener {
 		textViewYellow.setText(""+(int)pixel.yellow);
 		textViewBlue.setText(""+(int)pixel.blue);
 		textViewWhite.setText(""+(int)pixel.white);
+		textViewBlack.setText(""+(int)(pixel.black*10));
 	}
 
 	@Override
