@@ -55,12 +55,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private LinearLayout submenuSizes = null;
 
 	private Tool optionsSubmenu;
-	private Tool arrow;
-	private Tool colorBlack;
 
 	// Temporary Utilsiables to create interface
 	private Tube tube;
-	private ToolSize toolSize = null;
 	private Tool toolOpaque = null;
 
 	private boolean rootVisible = true;
@@ -171,6 +168,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		root = (RelativeLayout) findViewById(R.id.root);
 		
 		LinearLayout menu = (LinearLayout) findViewById(R.id.menu);
+		menu.removeAllViews();
+		
 		submenu = (LinearLayout) findViewById(R.id.submenu);
 		submenu.setVisibility(View.INVISIBLE);
 
@@ -240,6 +239,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		menu.addView(colorBlack);
 		*/
 		
+		Tool arrow;
 		arrow = new Tool(this);
 		arrow.setMode(action_mode,
 				BitmapFactory.decodeResource(getResources(), R.drawable.arrow));
@@ -264,9 +264,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		};
 
 		// -------------- SUBMENU size -----------------------
-
-		toolSize = new ToolSize(this);
-		toolSize.setViewCanvas(viewCanvas);
+		ToolSize toolSize = null;
+		
+		toolSize = new ToolSize(this, 1, 11, (int)viewCanvas.getBrushSize());
 		toolSize.callback = new ToolSize.Listener() {
 			@Override
 			public void callbackVALUE_CHANGED(int value) {
@@ -274,7 +274,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			}
 		};
 		submenu2.addView(toolSize);
-
+		// -------------- SUBMENU size -----------------------
+		ToolSize tooldarkness = null;
+		
+		tooldarkness = new ToolSize(this,1, 100, (int)viewCanvas.getDarkness());
+		tooldarkness.callback = new ToolSize.Listener() {
+			@Override
+			public void callbackVALUE_CHANGED(int value) {
+				viewCanvas.setDarkness(1+(float)value/10);
+			}
+		};
+		submenu2.addView(tooldarkness); 
 		// -------------- \SUBMENU size -----------------------
 
 		final Tool toolSpread = new Tool(this);
@@ -427,9 +437,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 							dialogColors.callback = new DialogColors.MyCallback() {
 
 								@Override
-								public void callbackColorSelected(
-										Brush brush) {
-										viewSubmenu.selectBrush(brush);
+								public void callbackColorSelected() {
+										//viewSubmenu.selectBrush(brush);
 								}
 								
 							};
@@ -547,8 +556,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		} else if (tool.getCode() == action_mode) {
 			viewCanvas.changeMode();
 			tool.setIcon(viewCanvas.getIcon());
-		} else if (tool.getCode() == action_black) {
-			viewCanvas.setBrushDarker();
 		}
 
 		submenu.setVisibility(View.INVISIBLE);

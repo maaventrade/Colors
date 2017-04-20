@@ -53,12 +53,9 @@ public class Brush extends ImageView{
 		init(context);
 	}
 
-	public void setDarker()
+	public void setDarkerness(float d)
 	{
-		mPixel.red = 0;
-		mPixel.blue = 0;
-		mPixel.yellow = 0;
-		mPixel.white = 0;
+		mPixel.darkness = d;
 		rgb = Utils.ryb2rgb(mPixel);
 		invalidate();
 	}
@@ -85,8 +82,9 @@ public class Brush extends ImageView{
 
 	public PixelFloat getPixel()
 	{
-		PixelFloat p = new PixelFloat((short)mPixel.red, (short)mPixel.yellow, (short)mPixel.blue, (short)mPixel.white);
-		return p;
+		//PixelFloat p = new PixelFloat((short)mPixel.red, (short)mPixel.yellow, (short)mPixel.blue, (short)mPixel.white);
+		//return p;
+		return mPixel;
 	}
 
 	public int getColor()
@@ -200,21 +198,23 @@ public class Brush extends ImageView{
 		return rgb == brush.rgb;
 	}
 
-	public void setPixel(PixelFloat readObject) {
-		mPixel = readObject;
+	public void setPixel(PixelFloat pixelFloat) {
+		mPixel.copy(pixelFloat);
 		rgb = Utils.ryb2rgb(mPixel);
 		invalidate();
 	}
 
 	public String pixelToString() {
-		return ""+mPixel.red+"\n"+mPixel.yellow+"\n"+mPixel.blue+"\n"+mPixel.white+"\n";
+		return ""+mPixel.red+"\n"+mPixel.yellow+"\n"+mPixel.blue+"\n"+mPixel.white+"\n"+mPixel.darkness+"\n";
 	}
 
-	public void setPixel(String str1, String str2, String str3, String str4) {
+	public void setPixel(String str1, String str2, String str3, String str4, String str5) {
 		mPixel.red = Float.parseFloat(str1);
 		mPixel.yellow = Float.parseFloat(str2);
 		mPixel.blue = Float.parseFloat(str3);
 		mPixel.white = Float.parseFloat(str4);
+		mPixel.darkness = Float.parseFloat(str5);
+		
 		rgb = Utils.ryb2rgb(mPixel);
 		
 		invalidate();
@@ -272,5 +272,9 @@ public class Brush extends ImageView{
 	public void setColor(PixelFloat pixelFloat) {
 		mPixel = new PixelFloat();
 		rgb = Utils.ryb2rgb(mPixel);
+	}
+
+	public float getDarkness() {
+		return mPixel.darkness;
 	}
 }

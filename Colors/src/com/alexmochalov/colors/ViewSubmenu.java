@@ -129,7 +129,7 @@ public class ViewSubmenu extends View{
 	public void saveBrushes() {
 		// Save the list of the used brushes
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(Utils.APP_FOLDER+"/brushes.txt"));
+			BufferedWriter out = new BufferedWriter(new FileWriter(Utils.APP_FOLDER+"/brushes1.txt"));
 			for (Brush b: brushes){
 		        out.write(b.pixelToString());
 			} 
@@ -144,10 +144,10 @@ public class ViewSubmenu extends View{
 	}
 
 	public void loadBrushes(ViewCanvas viewCanvas) {
-		File file = new File(Utils.APP_FOLDER+"/brushes.txt");
+		File file = new File(Utils.APP_FOLDER+"/brushes1.txt");
 		if(file.exists()){                          
 		    try {
-		    	FileInputStream input = new FileInputStream(Utils.APP_FOLDER+"/brushes.txt");
+		    	FileInputStream input = new FileInputStream(Utils.APP_FOLDER+"/brushes1.txt");
 						
 				if ( input != null ) {
 		            InputStreamReader in = new InputStreamReader(input);
@@ -156,6 +156,7 @@ public class ViewSubmenu extends View{
 	            	String str2 = "";
 	            	String str3 = "";
 	            	String str4 = "";
+	            	String str5 = "";
 	            	int i = 0;
 					// Parce the input string
 		            while ( true ) {
@@ -163,9 +164,10 @@ public class ViewSubmenu extends View{
 		            	str2 = br.readLine(); if (str2 == null) break;
 		            	str3 = br.readLine(); if (str3 == null) break;
 		            	str4 = br.readLine(); if (str4 == null) break;
+		            	str5 = br.readLine(); if (str4 == null) break;
 		            	Brush b = new Brush(mContext);
 		            	b.setRadius(Utils.brushRadius, false);
-				        b.setPixel(str1, str2, str3, str4);
+				        b.setPixel(str1, str2, str3, str4, str5);
 						b.setMode(Utils.Mode.paint);
 						brushes.add(b);
 				        ///mixes[i++].invalidate();

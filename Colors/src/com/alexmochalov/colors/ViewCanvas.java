@@ -26,11 +26,6 @@ public class ViewCanvas extends View
 
 	private String mFileName = "new";
 
-	public void setBrushDarker()
-	{
-		mBrush.setDarker();
-	}
-	
 	private enum Mode {move, paint};
 	private Mode mode = Mode.paint;
 	
@@ -57,14 +52,14 @@ public class ViewCanvas extends View
 	private int[][] mBrushPoints = null;
 	//private int[][] mBrushPoints1 = null;
 	//private int[][] mBrushPoints2 = null;
-
+/*
 	private int mColor = 0; 
 	private int mAlpha = 0;
 	private PixelFloat mPixel = null;
 
 	private PixelFloat sunny = new PixelFloat(0, 0, 0, 100);
 	private PixelFloat shadow = new PixelFloat(25, 25, 50, 0);
-
+*/
 	int NNN = 0;
 
 	private int restOfColor; // 
@@ -226,11 +221,13 @@ public class ViewCanvas extends View
 	private boolean resize = false;
 	private boolean pointerUp = false;
 
-	public void setColor(PixelFloat PixelFloat)
+	public void setColor(PixelFloat pixelFloat)
 	{
-		mPixel = PixelFloat;
-		mColor = Utils.ryb2rgb(mPixel);
-		mAlpha = 255;
+		mBrush.setColor(pixelFloat);
+		
+		//mPixel = PixelFloat;
+		//mColor = Utils.ryb2rgb(mPixel);
+		//mAlpha = 255;
 
 		restOfColor = 100;
 
@@ -245,6 +242,7 @@ public class ViewCanvas extends View
 
 	private void getColorFromTheCanvas(int x, int y)
 	{
+		/*
 		int nX = x / CELLSIZE;
 		int nY = y / CELLSIZE;
 		mPixel = cells[nX][nY].PixelFloat;
@@ -256,6 +254,7 @@ public class ViewCanvas extends View
 
 			mBrush.setColor(mPixel);
 		}
+		*/
 	}
 
 
@@ -312,7 +311,7 @@ public class ViewCanvas extends View
 			case MotionEvent.ACTION_MOVE:
 				if (mode == Mode.paint){
 					// If we have color in the brush
-					if (restOfColor > 0)
+					//if (restOfColor > 0)
 					{
 
 						double d = Math.sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0));
@@ -356,9 +355,9 @@ public class ViewCanvas extends View
 						N++;
 
 					}
-					else 
+					//else 
 					// Brush is empty. Get color from the vanvas
-						getColorFromTheCanvas(x, y);
+					//	getColorFromTheCanvas(x, y);
 					
 				} else {
 					PointerCoords coord0 = new PointerCoords();
@@ -464,6 +463,12 @@ public class ViewCanvas extends View
 		int size= mBrushSize;
 
 		int mBrushSize2 = mBrushSize << 1;
+		
+		if (mBrush.isEmpty())
+			return;
+		
+		PixelFloat pixelFloat = mBrush.getPixel();
+		//float darkness = mBrush. 
 
 		// Repeet for all point ofthe brush
 		for (int i = nX - size; i < nX + size; i++)
@@ -487,7 +492,7 @@ public class ViewCanvas extends View
 				int y12 = (int) ((x11 - size) * Math.sin(inRads) + (y11 - size) * Math.cos(inRads)) + size;
 
 				//try{
-					cells[i][j].PixelFloat.add(mPixel, true); 
+					cells[i][j].PixelFloat.add(pixelFloat, true); 
 					cells[i][j].color = Utils.ryb2rgb(cells[i][j].PixelFloat);
 					
 				if (x12 >= 0 && x12 < mBrushSize2 && y12 >= 0 && y12 < mBrushSize2)
@@ -566,7 +571,6 @@ public class ViewCanvas extends View
 //		editor.putInt(PREFS_BRUSH_TRANSP, brush.getTransparency());
 //		editor.putInt(PREFS_BRUSH_SIZE, brush.getSize0());
 		
-		mBrush = null;
 		save(Utils.APP_FOLDER+"/screen.png");
 	}
 
@@ -772,7 +776,7 @@ public class ViewCanvas extends View
 	public void addColor(PixelFloat PixelFloat)
 	{
 		mBrush.addColor(PixelFloat);
-		setColor(mBrush.getPixel());
+		//setColor(mBrush.getPixel());
 	}
 
 	public void setBrush(Brush brush2) {
@@ -781,7 +785,7 @@ public class ViewCanvas extends View
 
 	public void copyBrush(Brush v) {
 		mBrush.copy(v);
-		setColor(mBrush.getPixel());
+		//setColor(mBrush.getPixel());
 	}
 
 	public float getBrushSize() {
@@ -830,6 +834,15 @@ public class ViewCanvas extends View
 	public void setPixel(PixelFloat PixelFloat) {
 		mBrush.setPixel(PixelFloat);
 		
+	}
+
+	public void setDarkness(float value) {
+		mBrush.setDarkerness(value);
+		
+	}
+
+	public float getDarkness() {
+		return mBrush.getDarkness();
 	}
 	
 }

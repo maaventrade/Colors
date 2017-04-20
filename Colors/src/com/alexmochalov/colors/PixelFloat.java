@@ -14,7 +14,7 @@ public class PixelFloat {
 	// red + yellow + blue + white = 100
 	
 	// level of BLACK
-	public float black; // 1...10;  G,R,B divided to "black"  
+	public float darkness; // 1...10;  G,R,B divided to "black"  
 	
 	boolean modified = false;
 	
@@ -23,16 +23,16 @@ public class PixelFloat {
 		this.yellow = 0;
 		this.blue = 0;
 		this.white = 0;
-		this.black = 1;
+		this.darkness = 1;
 	}
 
-	public void add(PixelFloat source)
+	public PixelFloat(PixelFloat source)
 	{
 		this.red = source.red;
 		this.yellow = source.yellow;
 		this.blue = source.blue;
 		this.white = source.white;
-		this.black = source.black;
+		this.darkness = source.darkness;
 	}
 
 	public void setModified(boolean p0)
@@ -45,7 +45,7 @@ public class PixelFloat {
 		this.yellow = ryb[1];
 		this.blue = ryb[2];
 		this.white = ryb[3];
-		this.black = 1;
+		this.darkness = 1;
 	}
 	
 	public PixelFloat(float r, float y, float b, float w) {
@@ -53,7 +53,7 @@ public class PixelFloat {
 		this.yellow = y;
 		this.blue = b;
 		this.white = w;
-		this.black = 1;
+		this.darkness = 1;
 	}
 	
 	public PixelFloat(float r, float y, float b) {
@@ -62,7 +62,7 @@ public class PixelFloat {
 		this.yellow = y*k;
 		this.blue = b*k;
 		this.white = 0;
-		this.black = 1;
+		this.darkness = 1;
 	}
 	
 	
@@ -72,7 +72,7 @@ public class PixelFloat {
 		this.yellow = y*k;
 		this.blue = b*k;
 		this.white = w;
-		this.black = 1;
+		this.darkness = 1;
 	}
 	
 	public PixelFloat(short r, short y, short b, short w) {
@@ -80,7 +80,7 @@ public class PixelFloat {
 		this.yellow = y;
 		this.blue = b;
 		this.white = w;
-		this.black = 1;
+		this.darkness = 1;
 	}
 
 	public boolean isZero()
@@ -94,7 +94,7 @@ public class PixelFloat {
 		this.yellow = 0;
 		this.blue = 0;
 		this.white = 0;
-		this.black = 1;
+		this.darkness = 1;
 //		this.color = Utils.ryb2rgb(this);
 	}
 	
@@ -106,7 +106,7 @@ public class PixelFloat {
 		yellow = PixelFloat.yellow;
 		blue = PixelFloat.blue;
 		white = PixelFloat.white;
-		black = PixelFloat.black;
+		darkness = PixelFloat.darkness;
 		
 		this.modified = modified;
 	}
@@ -141,6 +141,8 @@ public class PixelFloat {
 		yellow = (yy / (rr + yy + bb + ww) * Utils.mPercent);
 		blue = (bb / (rr + yy + bb + ww) * Utils.mPercent);
 		white = (ww / (rr + yy + bb + ww) * Utils.mPercent);
+		
+		darkness = (darkness + PixelFloat.darkness)/2;
 	}
 	
 	public boolean isModified() {
@@ -160,7 +162,7 @@ public class PixelFloat {
 		this.yellow = PixelFloat.yellow;
 		this.blue = PixelFloat.blue;
 		this.white = PixelFloat.white;
-		this.black = PixelFloat.black;
+		this.darkness = PixelFloat.darkness;
 		
 	}
 }

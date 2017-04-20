@@ -9,8 +9,6 @@ import android.widget.*;
 
 public class ToolSize extends ImageView{
 	
-	private ViewCanvas mViewCanvas;
-	
 	private boolean mVisible = true;
 	private boolean mExpanded = true;
 	private boolean mMoved = false;
@@ -21,6 +19,8 @@ public class ToolSize extends ImageView{
 	
 	private int MIN = 1;
 	private int MAX = 11;
+	
+	private int mValue = 1;
 	/*
 	 public OnTestedListener mCallback;
 
@@ -53,8 +53,13 @@ public class ToolSize extends ImageView{
 		init();
 	}
 
-	public ToolSize(Context context) {
+	public ToolSize(Context context, int min, int max, int value) {
 		super(context);
+		
+		MIN = min;
+		MAX = max;
+		mValue = value;
+		
 		init();
 	}
 
@@ -62,10 +67,6 @@ public class ToolSize extends ImageView{
 		paint = new Paint();
 	}
 
-	void setViewCanvas(ViewCanvas viewCanvas) {
-		mViewCanvas = viewCanvas;
-	}
-	
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(Utils.brushWidth*10, Utils.brushWidth*2);
@@ -92,7 +93,7 @@ public class ToolSize extends ImageView{
     	canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
     	
     	paint.setTextSize(32);
-    	canvas.drawText(""+(int)mViewCanvas.getBrushSize(), 4, 30, paint);
+    	canvas.drawText(""+mValue, 4, 30, paint);
     	
     	//if (mExpanded){
         	paint.setStrokeWidth(6);
@@ -105,7 +106,7 @@ public class ToolSize extends ImageView{
         	canvas.drawLine(h2, h2 , w - h2, h2, paint);
         	
         	int h = w - getHeight();
-        	int pos = (int) ((h/(MAX-MIN) * (mViewCanvas.getBrushSize()-1)))+h2;
+        	int pos = (int) ((h/(MAX-MIN) * (mValue-1)))+h2;
         	
 			paint.setStrokeWidth(8);
 			paint.setColor(Color.rgb(200,200,255));
@@ -148,8 +149,9 @@ public class ToolSize extends ImageView{
 					int h2 = getHeight()/2;
 		        	int h = getWidth() - getHeight();
 					float value = (x-h2)/h*(MAX-MIN)+1; 
-					value = Math.min(Math.max(value, MIN), MAX); 
-					mViewCanvas.setBrushSize((int)value);
+					mValue = (int) Math.min(Math.max(value, MIN), MAX); 
+					if (callback != null)
+						callback.callbackVALUE_CHANGED(mValue);
 					//if (callback != null)
 						//callback.callbackVALUE_CHANGED((int)value);
 					invalidate();
@@ -163,9 +165,9 @@ public class ToolSize extends ImageView{
 					int h2 = getHeight()/2;
 		        	int h = getWidth() - getHeight();
 					float value = (x-h2)/h*(MAX-MIN)+1; 
-					value = Math.min(Math.max(value, MIN), MAX); 
+					mValue = (int) Math.min(Math.max(value, MIN), MAX); 
 					if (callback != null)
-						callback.callbackVALUE_CHANGED((int)value);
+						callback.callbackVALUE_CHANGED(mValue);
 					invalidate();
 				}
         		

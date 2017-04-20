@@ -110,9 +110,9 @@ public final class Utils
 	    float R = (red  & 0xff)/ 255f;
 	    float Y = (yellow  & 0xff)/ 255f;
 	    float B = (blue  & 0xff)/ 255f;
-	    int R1 = getR(R,Y,B,color.black);
-	    int G1 = getG(R,Y,B,color.black) ;
-	    int B1 = getB(R,Y,B,color.black);
+	    int R1 = getR(R,Y,B,color.darkness);
+	    int G1 = getG(R,Y,B,color.darkness) ;
+	    int B1 = getB(R,Y,B,color.darkness);
 		//Log.d("","alpha "+color.alpha);
 	    return Color.rgb(R1, G1, B1);
 	}
