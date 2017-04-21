@@ -75,8 +75,8 @@ public class Tool extends ImageView{
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(Utils.brushWidth*2, Utils.brushWidth*2);
-        rectD = new Rect(0,0,Utils.brushWidth*2,Utils.brushWidth*2);
+        setMeasuredDimension(Utils.getBrushWidth()*2, Utils.getBrushWidth()*2);
+        rectD = new Rect(0,0,Utils.getBrushWidth()*2,Utils.getBrushWidth()*2);
     }
 	
     @Override
@@ -85,7 +85,7 @@ public class Tool extends ImageView{
     		
 		if (icon != null){
 			Path path = new Path();
-	    	path.addCircle(Utils.brushWidth, Utils.brushWidth, Utils.brushRadius, Path.Direction.CW);
+	    	path.addCircle(Utils.getBrushWidth(), Utils.getBrushWidth(), Utils.getBrushRadius(), Path.Direction.CW);
 	    	if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
 	    		canvas.clipPath(path);
 				canvas.drawBitmap(icon, rectS, rectD, null);

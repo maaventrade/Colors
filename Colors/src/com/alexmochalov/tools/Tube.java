@@ -1,4 +1,8 @@
-package com.alexmochalov.colors;
+package com.alexmochalov.tools;
+
+import com.alexmochalov.colors.PixelFloat;
+import com.alexmochalov.colors.Utils;
+import com.alexmochalov.colors.ViewCanvas;
 
 import android.content.*;
 import android.graphics.*;
@@ -27,20 +31,6 @@ public class Tube extends ImageView{
 		init();
 	}
 
-	@Override
-	public void buildDrawingCache(boolean autoScale)
-	{
-		// TODO: Implement this method
-		super.buildDrawingCache(autoScale);
-	}
-
-	@Override
-	public void buildDrawingCache()
-	{
-		// TODO: Implement this method
-		super.buildDrawingCache();
-	}
-
 	public void setColor(short r, short y, short b, short w)
 	{
 		PixelFloat = new PixelFloat(r, y, b, w); 
@@ -58,7 +48,7 @@ public class Tube extends ImageView{
 	
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(Utils.brushWidth*2, Utils.brushWidth*2);
+        setMeasuredDimension(Utils.getBrushWidth()*2, Utils.getBrushWidth()*2);
     }
 
 	public void setColor(short[] rgb2ryb) {
@@ -71,15 +61,15 @@ public class Tube extends ImageView{
     	Utils.drawBG(canvas);
     
         paint.setColor(Utils.ryb2rgb(PixelFloat));
-        canvas.translate(Utils.brushWidth, Utils.brushWidth);
-        canvas.drawCircle(0, 0, Utils.brushRadius, paint);
+        canvas.translate(Utils.getBrushWidth(), Utils.getBrushWidth());
+        canvas.drawCircle(0, 0, Utils.getBrushRadius(), paint);
 
     }
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX() - Utils.brushWidth;
-        float y = event.getY() - Utils.brushWidth;
+        float x = event.getX() - Utils.getBrushWidth();
+        float y = event.getY() - Utils.getBrushWidth();
 
         switch (event.getAction()) {
         	case MotionEvent.ACTION_DOWN:

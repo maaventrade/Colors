@@ -3,6 +3,8 @@ package com.alexmochalov.colors;
 import java.io.File;
 
 import com.alexmochalov.dialogs.*;
+import com.alexmochalov.tools.Dark;
+import com.alexmochalov.tools.Tube;
 import com.example.draw.R;
 
 import android.annotation.SuppressLint;
@@ -15,6 +17,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -73,11 +77,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		setContentView(R.layout.activity_main);
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		final View decorView = getWindow().getDecorView();
+		
 		// Hide both the navigation bar and the status bar.
 		// SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and
 		// higher, but as
@@ -86,7 +94,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		// hide the navigation bar.
 
 		final int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_FULLSCREEN;
+				| View.SYSTEM_UI_FLAG_FULLSCREEN							
+				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+		
 		decorView.setSystemUiVisibility(uiOptions);
 		decorView
 				.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
@@ -98,7 +110,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 						}
 					}
 				});
-
 		mContext = this;
 
 		ActionBar getActionBar = getActionBar();
@@ -107,6 +118,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	}
 
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -116,6 +128,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			file.mkdirs();
 		}
 
+		
 		Utils.initBG(this);
 
 		viewCanvas = (ViewCanvas) this.findViewById(R.id.viewCanvas);
@@ -245,6 +258,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				BitmapFactory.decodeResource(getResources(), R.drawable.arrow));
 		arrow.setOnClickListener(this);
 		menu.addView(arrow);
+		
+		Dark dark;
+		dark = new Dark(this);
+		dark.setCanvas(viewCanvas);
+		dark.setOnClickListener(this);
+		menu.addView(dark);
 
 		if (!ViewConfiguration.get(this).hasPermanentMenuKey()) {
 			optionsSubmenu = new Tool(this);
@@ -302,7 +321,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 		// -------------- SUBMENU opaque -----------------------
 		submenu3 = new LinearLayout(this);
-		submenu3.setOrientation(LinearLayout.HORIZONTAL);
+		submenu3.setOrientation(LinearLayout.VERTICAL);
 		submenu2.addView(submenu3);
 
 		toolOpaque = new Tool(this);
@@ -365,7 +384,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		/*
 		 * //-------------- SUBMENU size ----------------------- submenuSizes =
 		 * new LinearLayout(this);
-		 * submenuSizes.setOrientation(LinearLayout.HORIZONTAL); //LayoutParams
+		 * submenuSizes.setOrientation(LinearLayout.VERTICAL); //LayoutParams
 		 * linLayoutParam = new LayoutParams(LayoutParams.WRAP_CONTENT,
 		 * LayoutParams.WRAP_CONTENT); submenu2.addView(submenuSizes);
 		 * 
@@ -594,8 +613,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		// double k = Math.sqrt(4.795f/diagonalInches);
 		// Var.brushWidth = (int)(50f*k);
 		// Var.brushRadius = (int)(32f*k);
-		Utils.brushWidth = Math.min(50, (int) (metrics.widthPixels / 16f));
-		Utils.brushRadius = (int) (Utils.brushWidth * 0.64f);
+		Utils.setBrushWidth (Math.min(50, (int) (metrics.widthPixels / 16f)));
 
 		// Toast.makeText(this, "Var.brushWidth "+Var.brushWidth,
 		// Toast.LENGTH_LONG).show();

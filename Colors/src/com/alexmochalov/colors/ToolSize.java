@@ -69,8 +69,8 @@ public class ToolSize extends ImageView{
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(Utils.brushWidth*10, Utils.brushWidth*2);
-        rectD = new Rect(0,0,Utils.brushWidth*10,Utils.brushWidth*2);
+        setMeasuredDimension(Utils.getBrushWidth()*10, Utils.getBrushWidth()*2);
+        rectD = new Rect(0,0,Utils.getBrushWidth()*10,Utils.getBrushWidth()*2);
     }
 	
     @Override
@@ -126,8 +126,8 @@ public class ToolSize extends ImageView{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX() - Utils.brushWidth;
-        float y = event.getY() - Utils.brushWidth;
+        float x = event.getX() - Utils.getBrushWidth();
+        float y = event.getY() - Utils.getBrushWidth();
 
         switch (event.getAction()) {
         	case MotionEvent.ACTION_UP:

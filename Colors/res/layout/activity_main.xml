@@ -18,30 +18,31 @@
 
 		<LinearLayout
 		    android:id="@+id/menu"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+		    android:layout_height="match_parent"
 		    android:layout_alignParentTop="true"
-		    android:orientation="horizontal" >
+		    android:orientation="vertical" >
 
 		</LinearLayout>
 
-		<LinearLayout
+		<LinearLayout       
 			android:id="@+id/submenu"
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
-			android:orientation="horizontal"
-			android:layout_below="@id/menu">
+			android:orientation="vertical"
+			android:layout_toRightOf="@id/menu">
 			
 			<com.alexmochalov.colors.ViewSubmenu
 				android:id="@+id/submenu1"
-				android:layout_width="wrap_content"
-				android:layout_height="match_parent">
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 			</com.alexmochalov.colors.ViewSubmenu>
 			<LinearLayout
 				android:id="@+id/submenu2"
-				android:layout_width="wrap_content"
-				android:layout_height="match_parent"
-				android:orientation="vertical">
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">  
 			</LinearLayout>
 		</LinearLayout>
 

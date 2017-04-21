@@ -94,6 +94,9 @@ public class ViewCanvas extends View
 	private float mCurPressure;
 	private float mCurSize;
 	private int mCurWidth;
+	
+	private float drawValue = -1;
+	private Paint paintDrawValue;
 
 	MyCallback callback = null;
 	
@@ -125,9 +128,14 @@ public class ViewCanvas extends View
 		Log.d("cc", "init ");
 		setBrushSize(11);
 		
-
-		Utils.brushRadius = 30; // ????????????????????????????????????????
-		mBrush.setRadius(Utils.brushRadius, true);
+		if (!isInEditMode()){
+			Utils.setBrushRadius(30); // ????????????????????????????????????????
+			mBrush.setRadius(Utils.getBrushRadius(), true);
+		}
+		
+		paintDrawValue = new Paint(Paint.ANTI_ALIAS_FLAG);
+		paintDrawValue.setColor(Color.BLACK);
+		paintDrawValue.setTextSize(44);
 	}
 
 	private void fillBrush()
@@ -189,6 +197,11 @@ public class ViewCanvas extends View
 		
 		if (mBitmap != null)
 			canvas.drawBitmap(mBitmap, mRectBitmap, mRect, null);
+		
+		if (drawValue >= 0){
+			canvas.drawText(""+drawValue, 150, 150, paintDrawValue);
+		}
+		
 	}
 
 
@@ -843,6 +856,11 @@ public class ViewCanvas extends View
 
 	public float getDarkness() {
 		return mBrush.getDarkness();
+	}
+
+	public void setDrawValue(Float value) {
+		drawValue = value;
+		invalidate();
 	}
 	
 }

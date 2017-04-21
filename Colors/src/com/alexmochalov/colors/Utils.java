@@ -14,8 +14,8 @@ public final class Utils
 //	public static PointOfLine lastPoint = null;
 	
 	static final float mPercent = 100f;
-	static int brushWidth = 0;
-	static int brushRadius = 0;
+	private static int brushWidth = 30;
+	private static int brushRadius = 30;
 	
 	static String PROGRAMM_FOLDER = "xolosoft";
 	public static String APP_FOLDER = Environment.getExternalStorageDirectory().getPath()+"/"+PROGRAMM_FOLDER+"/RYB";
@@ -193,6 +193,23 @@ public final class Utils
         canvas.drawText(""+text+"%", brushWidth-(bounds.right-bounds.left)/2, brushWidth, paint);
         paint.setColor(Color.BLACK);
         canvas.drawText(""+text+"%", brushWidth-(bounds.right-bounds.left)/2+1, brushWidth+1, paint);
+	}
+	
+	public static int getBrushWidth(){
+		return brushWidth;
+	}
+	
+	public static int getBrushRadius(){
+		return brushRadius;
+	}
+
+	public static void setBrushWidth(int min) {
+		brushWidth = min;
+		brushRadius = (int) (brushWidth * 0.64f);
+	}
+
+	public static void setBrushRadius(int i) {
+		brushRadius = i;
 	}
 
 };

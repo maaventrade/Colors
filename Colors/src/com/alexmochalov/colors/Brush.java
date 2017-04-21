@@ -125,7 +125,7 @@ public class Brush extends ImageView{
     	if (radius != 0){
     		if (mode != Mode.paint){
         		Path path = new Path();
-        		path.addCircle(Utils.brushWidth, Utils.brushWidth, radius, Path.Direction.CW);
+        		path.addCircle(Utils.getBrushWidth(), Utils.getBrushWidth(), radius, Path.Direction.CW);
     	    	if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
     	    		canvas.clipPath(path);
     				canvas.drawBitmap(icon, rectS, rectD, null);
@@ -136,22 +136,22 @@ public class Brush extends ImageView{
     		} else {
     			paint.setColor(rgb);
 				//Log.d("","RGB === "+rgb+" radius "+radius+" paint "+paint);
-    			canvas.drawCircle(Utils.brushWidth, Utils.brushWidth, radius, paint);
+    			canvas.drawCircle(Utils.getBrushWidth(), Utils.getBrushWidth(), radius, paint);
     			
     			if (main)
     				Utils.drawText(canvas, transparency, false);    			
     		}
 		} else {
 			paint.setColor(Color.BLUE);
-			canvas.drawCircle(Utils.brushWidth, Utils.brushWidth, 22, paint);			
+			canvas.drawCircle(Utils.getBrushWidth(), Utils.getBrushWidth(), 22, paint);			
 		}
 
     }
     
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(Utils.brushWidth*2, Utils.brushWidth*2);
-        rectD = new Rect(0,0,Utils.brushWidth*2,Utils.brushWidth*2);
+        setMeasuredDimension(Utils.getBrushWidth()*2, Utils.getBrushWidth()*2);
+        rectD = new Rect(0,0,Utils.getBrushWidth()*2,Utils.getBrushWidth()*2);
     }
 	
 	public void addColor(PixelFloat pixelFloat){

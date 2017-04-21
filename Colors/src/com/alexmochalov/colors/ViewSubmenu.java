@@ -30,9 +30,9 @@ public class ViewSubmenu extends View{
 	ArrayList <Brush> brushes = null;
 	Context mContext;
 	
-	int shiftY = 0;
-	float yStart = 0;
-	float y0 = 0;
+	int shiftX = 0;
+	float xStart = 0;
+	float x0 = 0;
 	
 	MyCallback callback = null;
 
@@ -57,37 +57,37 @@ public class ViewSubmenu extends View{
 		canvas.drawColor(Color.GREEN);
 		if (isInEditMode()) return;
 
-		canvas.translate(0, shiftY);
+		canvas.translate(shiftX, 0);
 		for (Brush b: brushes){
 			b.draw(canvas);
-			canvas.translate(0, Utils.brushWidth*2);
+			canvas.translate(Utils.getBrushWidth()*2, 0);
 		}
 	}
 	
 	@Override 
 	public boolean onTouchEvent(MotionEvent event) {
-		float y = event.getY(); 
+		float x = event.getX(); 
 		
 		switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-            y0 = y;
-            yStart = y;
+            x0 = x;
+            xStart = x;
             return true;
         case MotionEvent.ACTION_MOVE:
-        	shiftY = shiftY + (int)(y - y0);
+        	shiftX = shiftX + (int)(x - x0);
         	invalidate();
-            y0 = y;
+            x0 = x;
             return true;
         case MotionEvent.ACTION_UP:
-        	Log.d("", "Math.abs(yStart - y) "+Math.abs(yStart - y));
-        	if (Math.abs(yStart - y) < 5){
-        		int t = shiftY;
+        	//Log.d("", "Math.abs(yStart - y) "+Math.abs(yStart - y));
+        	if (Math.abs(xStart - x) < 5){
+        		int t = shiftX;
         		for (Brush b: brushes){
-        			if (y >= t && y <= t+Utils.brushWidth*2){
+        			if (x >= t && x <= t+Utils.getBrushWidth()*2){
         				callback.callbackSELECTED(b);
         	            return true;
         			} else 
-						t = t + Utils.brushWidth*2;
+						t = t + Utils.getBrushWidth()*2;
         		}
         	}
     		
@@ -98,12 +98,18 @@ public class ViewSubmenu extends View{
 	
 	@Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-	   DisplayMetrics metrics = new DisplayMetrics();
-	   WindowManager windowManager = (WindowManager) mContext
+		if (!isInEditMode()){
+			DisplayMetrics metrics = new DisplayMetrics();
+			WindowManager windowManager = (WindowManager) mContext
                .getSystemService(Context.WINDOW_SERVICE);
-       windowManager.getDefaultDisplay().getMetrics(metrics);
 	   
-       setMeasuredDimension(Utils.brushWidth*2, metrics.heightPixels-Utils.brushWidth*2);
+			windowManager.getDefaultDisplay().getMetrics(metrics);
+			setMeasuredDimension(metrics.widthPixels-Utils.getBrushWidth()*2, Utils.getBrushWidth()*2);
+		} else {
+			setMeasuredDimension(60, 120);
+		}
+			
+       
     }
 	
 	public void insertBrush(Brush brush) {
@@ -116,7 +122,7 @@ public class ViewSubmenu extends View{
 			}
 		
     	Brush b = new Brush(mContext);
-    	b.setRadius(Utils.brushRadius, false);
+    	b.setRadius(Utils.getBrushRadius(), false);
 		
 		brushes.add(0, b);
 		brushes.get(0).copy(brush);
@@ -166,7 +172,7 @@ public class ViewSubmenu extends View{
 		            	str4 = br.readLine(); if (str4 == null) break;
 		            	str5 = br.readLine(); if (str4 == null) break;
 		            	Brush b = new Brush(mContext);
-		            	b.setRadius(Utils.brushRadius, false);
+		            	b.setRadius(Utils.getBrushRadius(), false);
 				        b.setPixel(str1, str2, str3, str4, str5);
 						b.setMode(Utils.Mode.paint);
 						brushes.add(b);
